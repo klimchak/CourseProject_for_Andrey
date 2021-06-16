@@ -1683,68 +1683,95 @@ int main(int argc, char* argv[])
                         cout << "Пользователь с таким логином не найден!\n";
                         int continueAnswInterim;
                         bool okContin = false;
-                        while (okContin == false)
+                        if (continueAnsw == 2 || continueAnsw == 1)
                         {
-                            continueAnswInterim = getValueInt("1 - Зарегистрировать пользователя\n2 - Ввести другой логин\n3 - Выйти\n");
-                            if (continueAnswInterim == 1 || continueAnswInterim == 2 || continueAnswInterim == 3)
+                            bool choiceLoginStep = false;
+                            while (choiceLoginStep == false)
                             {
-                                okContin = true;
-                            }
-                            else
-                            {
-                                cout << "Введите одно из указанных чисел.\n" << endl;
-                            }
-                        }
-                        if (continueAnswInterim == 1) {
-                            Profile newUser;
-                            string out;
-                            int continueAnsw;
-                            bool okCreatProf = false;
-                            ifstream fin;
-                            cout << "Добавление новой пользователя" << endl;
-                            newUser = GetNewProfileData(true);
-                            fin.open(newUser.name + ".txt", ios_base::in);
-                            if (!fin.is_open()) // если файл не открыт
-                            {
-                                while (okCreatProf == false)
+                                continueAnsw = getValueInt("Ваш выбор:\n1 - Повторить ввод логина\n2 - Выход\n");
+                                if (continueAnsw == 1 || continueAnsw == 2)
                                 {
-                                    continueAnsw = getValueInt("Продолжаем?\n1 - Да\n2 - нет\n");
-                                    if (continueAnsw == 1 || continueAnsw == 2)
-                                    {
-                                        okCreatProf = true;
-                                    }
-                                    else
-                                    {
-                                        cout << "Введите одно из указанных чисел.\n" << endl;
-                                    }
+                                    choiceLoginStep = true;
                                 }
-                                if (continueAnsw == 1)
+                                else
                                 {
-                                    out = WorkProfileFD(newUser, false, false);
-                                    profile = newUser.level;
-                                    cout << out;
-                                    system("pause");
-                                    okTwo = true;
-                                }
-                                if (continueAnsw == 2)
-                                {
-                                    cout << "Операция прервана\n" << endl;
-                                    system("pause");
+                                    cout << "Введите одно из указанных чисел.\n" << endl;
                                 }
                             }
-                            else
+                            if (continueAnsw == 2)
                             {
-                                fin.close();
-                                cout << "Пользователь с таким логином существует.\n";
+                                cout << "Выход\n" << endl;
                                 system("pause");
+                                exit(0);
                             }
                         }
-                        if (continueAnswInterim == 3)
+                        if (continueAnsw == 3)
                         {
-                            cout << "Операция прервана\n" << endl;
-                            system("pause");
-                            exit(0);
+                            while (okContin == false)
+                            {
+                                continueAnswInterim = getValueInt("1 - Зарегистрировать пользователя\n2 - Ввести другой логин\n3 - Выйти\n");
+                                if (continueAnswInterim == 1 || continueAnswInterim == 2 || continueAnswInterim == 3)
+                                {
+                                    okContin = true;
+                                }
+                                else
+                                {
+                                    cout << "Введите одно из указанных чисел.\n" << endl;
+                                }
+                            }
+
+                            if (continueAnswInterim == 1) {
+                                Profile newUser;
+                                string out;
+                                int continueAnsw;
+                                bool okCreatProf = false;
+                                ifstream fin;
+                                cout << "Добавление новой пользователя" << endl;
+                                newUser = GetNewProfileData(true);
+                                fin.open(newUser.name + ".txt", ios_base::in);
+                                if (!fin.is_open()) // если файл не открыт
+                                {
+                                    while (okCreatProf == false)
+                                    {
+                                        continueAnsw = getValueInt("Продолжаем?\n1 - Да\n2 - нет\n");
+                                        if (continueAnsw == 1 || continueAnsw == 2)
+                                        {
+                                            okCreatProf = true;
+                                        }
+                                        else
+                                        {
+                                            cout << "Введите одно из указанных чисел.\n" << endl;
+                                        }
+                                    }
+                                    if (continueAnsw == 1)
+                                    {
+                                        out = WorkProfileFD(newUser, false, false);
+                                        profile = newUser.level;
+                                        cout << out;
+                                        system("pause");
+                                        okTwo = true;
+                                    }
+                                    if (continueAnsw == 2)
+                                    {
+                                        cout << "Операция прервана\n" << endl;
+                                        system("pause");
+                                    }
+                                }
+                                else
+                                {
+                                    fin.close();
+                                    cout << "Пользователь с таким логином существует.\n";
+                                    system("pause");
+                                }
+                            }
+                            if (continueAnswInterim == 3)
+                            {
+                                cout << "Операция прервана\n" << endl;
+                                system("pause");
+                                exit(0);
+                            }
                         }
+                        
                     }
                     else
                     {
