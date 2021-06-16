@@ -213,8 +213,8 @@ string WorkProfileFD(Profile user, bool rePass, bool del)
     {
         string out;
         char* char_arr;
-        user.name = user.name + ".txt";
-        char_arr = &user.name[0];
+        string delUserName = user.name + ".txt";
+        char_arr = &delUserName[0];
         if (remove(char_arr) != 0)
         {
             out = "    Ошибка удаления. Попробуйте вручную.\n";
@@ -238,13 +238,14 @@ string WorkProfileFD(Profile user, bool rePass, bool del)
     }
     else
     {
+        string reUserName = user.name + ".txt";
         if (rePass)
         {
-            fout.open(user.name + ".txt", ios_base::trunc);
+            fout.open(reUserName, ios_base::trunc);
         }
         else
         {
-            fout.open(user.name + ".txt", ios_base::app);
+            fout.open(reUserName, ios_base::app);
         }
         fout << user.name + "\n";
         fout << user.pass + "\n";
@@ -294,7 +295,18 @@ Profile GetNewProfileData(bool ifUser)
     fileUser.name = getValueStr("    Введите имя объекта");
     fileUser.pass = getValueStr("    Введите пароль");
     if (!ifUser) {
-        fileUser.level = getValueInt("    Введите уровень доступа:\n1 - Администратор\n2 - Менеджер\n3 - Пользователь\nВаш выбор: ");
+        int i;
+        while (ok == false)
+        {
+           i = getValueInt("    Введите уровень доступа:\n1 - Администратор\n2 - Менеджер\n3 - Пользователь\nВаш выбор: ");
+           if (i == 1 || i == 2 || i == 3) {
+               ok = true;
+           }
+           else {
+               cout << "Введите одно из указанных значений" << endl;
+           }
+        }
+        fileUser.level = i;
     }
     else
     {
@@ -965,6 +977,7 @@ void GetChoiceMenuAdmin()
         Profile fileUser;
         string out;
         string oldUserName;
+        string varUser;
         int continueAnsw;
         bool ok = false;
         ifstream fin;
@@ -1106,7 +1119,7 @@ void GetChoiceMenuAdmin()
                                 continue;
                             case 3:
                                 system("cls");
-                                cout << "Сортировка по типу\n" << endl;
+                                cout << "Сортировка по стоимости\n" << endl;
                                 sortCost();
                                 printTable(true, allAppliances, false);
                                 continue;
@@ -1206,8 +1219,10 @@ void GetChoiceMenuAdmin()
                 system("cls");
                 cout << "Редактирование учетной записи" << endl;
                 cout << "\n";
-                newUser.name = getValueStr("    Введите имя учетной записи, которую желаете изменить");
-                fin.open(newUser.name + ".txt", ios_base::in);
+                oldUserName = getValueStr("    Введите имя учетной записи, которую желаете изменить");
+                newUser.name = oldUserName;
+                varUser = oldUserName + ".txt";
+                fin.open(varUser, ios_base::in);
                 if (!fin.is_open()) // если файл не открыт
                 {
                     cout << "    Пользователь с таким логином не найден.\n";
@@ -1238,7 +1253,7 @@ void GetChoiceMenuAdmin()
                         interimProfile = GetNewProfileData(false);
                         out = WorkProfileFD(interimProfile, true, false);
                         cout << "    Учетная запись изменена\n";
-                        if (newUser.name != interimProfile.name)
+                        if (varUser != interimProfile.name)
                         {
                             WorkProfileFD(newUser, false, true);
                         }
@@ -1389,8 +1404,8 @@ void GetChoiceMenuManager()
         if (availabilityAppliances) {
             while (ok == false)
             {
-                continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по производителю\n2 - Сортировка по типу\n3 - Назад\n");
-                if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3)
+                continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по производителю\n2 - Сортировка по типу\n3 - Сортировка по стоимости\n4 - Назад\n");
+                if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
                 {
                     switch (continueAnsw)
                     {
@@ -1407,6 +1422,12 @@ void GetChoiceMenuManager()
                         printTable(true, allAppliances, false);
                         continue;
                     case 3:
+                        system("cls");
+                        cout << "Сортировка по стоимости\n" << endl;
+                        sortCost();
+                        printTable(true, allAppliances, false);
+                        continue;
+                    case 4:
                         GetChoiceMenuManager();
                         break;
                     default:
@@ -1487,8 +1508,8 @@ void GetChoiceMenuUser()
         if (availabilityAppliances) {
             while (ok == false)
             {
-                continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по производителю\n2 - Сортировка по типу\n3 - Назад\n");
-                if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3)
+                continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по производителю\n2 - Сортировка по типу\n3 - Сортировка по стоимости\n4 - Назад\n");
+                if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
                 {
                     switch (continueAnsw)
                     {
@@ -1505,6 +1526,12 @@ void GetChoiceMenuUser()
                         printTable(false, allAppliances, false);
                         continue;
                     case 3:
+                        system("cls");
+                        cout << "Сортировка по стоимости\n" << endl;
+                        sortCost();
+                        printTable(false, allAppliances, false);
+                        continue;
+                    case 4:
                         GetChoiceMenuUser();
                         break;
                     default:
