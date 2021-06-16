@@ -78,9 +78,9 @@ string WorkProfileFD(Profile user, bool rePass, bool del);
 Profile GetNewProfileData();
 // Функции выбора в меню
 void GetChoiceMenuAdmin();
-void GetChoiceAutoDataFileData();
-void GetChoiceAutoDataRecords();
-void GetChoiceAutoDataProfile();
+//void GetChoiceAutoDataFileData();
+//void GetChoiceAutoDataRecords();
+//void GetChoiceAutoDataProfile();
 void GetChoiceMenuManager();
 void GetChoiceMenuUser();
 // функции вывода меню
@@ -148,9 +148,18 @@ void PrintMenuAdmin()
         cout << "=================================================\n";
         cout << "\n";
         cout << "    Пожалуйста укажите пункт\n";
-        cout << "    1 - Работа с файлами данных\n";
-        cout << "    2 - Работа с учетными записями\n";
-        cout << "    3 - Выход\n";
+        cout << "\n";
+        cout << "-------------  Работа с файлом данных товаров  -------------\n";
+        cout << "    1 - Создать базу данных автомобилей\n";
+        cout << "    2 - Удалить базу данных автомобилей\n";
+        cout << "\n";
+        cout << "-------------  Работа с учетными записями      -------------\n";
+        cout << "    3 - Добавление учетной записи\n";
+        cout << "    4 - Редактирование учетной записи\n";
+        cout << "    5 - Удаление учетной записи\n";
+        cout << "\n";
+        cout << "    6 - Выход\n";
+        cout << "\n";
         cout << "    Ваш выбор: ";
     }
     else
@@ -160,15 +169,30 @@ void PrintMenuAdmin()
         cout << "=================================================\n";
         cout << "\n";
         cout << "    Пожалуйста укажите пункт\n";
-        cout << "    1 - Работа с файлами данных\n";
-        cout << "    2 - Работа с записями в файле данных\n";
-        cout << "    3 - Просмотр всех записей в таблице\n";
-        cout << "    4 - Работа с учетными записями\n";
-        cout << "    5 - Выход\n";
+        cout << "\n";
+        cout << "-------------  Работа с файлом данных товаров  -------------\n";
+        cout << "    1 - Создать базу данных автомобилей\n";
+        cout << "    2 - Удалить базу данных автомобилей\n";
+        cout << "\n";
+        cout << "-------------  Работа с записями товаров       -------------\n";
+        cout << "    3 - Добавление записи\n";
+        cout << "    4 - Редактирование записи\n";
+        cout << "    5 - Удаление записи\n";
+        cout << "    6 - Просмотр всех записей в таблице\n";
+        cout << "    7 - Поиск записей\n";
+        cout << "\n";
+        cout << "-------------  Работа с учетными записями      -------------\n";
+        cout << "    8 - Добавление учетной записи\n";
+        cout << "    9 - Редактирование учетной записи\n";
+        cout << "    10 - Удаление учетной записи\n";
+        cout << "\n";
+        cout << "    11 - Выход\n";
+        cout << "\n";
         cout << "    Ваш выбор: ";
     }
 }
 
+/*
 void DisplayAutoDataFileData()
 {
     cout << "          Меню работы с файлами данных\n";
@@ -179,8 +203,8 @@ void DisplayAutoDataFileData()
     cout << "3 - Назад\n";
     cout << "4 - Выход\n";
     cout << "Ваш выбор: ";
-}
-
+}*/
+/*
 void DisplayAutoDataRecords()
 {
     cout << "          Меню работы с записями\n";
@@ -195,7 +219,8 @@ void DisplayAutoDataRecords()
     cout << "7 - Выход\n";
     cout << "Ваш выбор: ";
 }
-
+*/
+/*
 void DisplayAutoDataProfile()
 {
     cout << "          Меню работы с учетными записями\n";
@@ -208,6 +233,7 @@ void DisplayAutoDataProfile()
     cout << "5 - Выход\n";
     cout << "Ваш выбор: ";
 }
+*/
 
 void PrintMenuManager()
 {
