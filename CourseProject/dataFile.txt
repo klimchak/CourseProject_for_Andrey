@@ -6,5 +6,5 @@
 #6#СВЧ печь#LG#mw1#белый#880#01.02.2020###
 #7#стиральная машина#Indesit#mw1#белый#400#01.02.2020###
 #8#холодильник#samsung#mw1#синий#700#01.02.2020###
-#9#холодильник#samsung#mw1#белый#400#01.02.2020###
-#10#sdsad#sadasd#sdasad#asdas#22222#sadsada###
+#9#холодильник#samsung#mw1#белый#400#01.02.2020#test#shpek@gmail.com#16.06.2021
+#10#sdsad#sadasd#sdasad#asdas#22222#sadsada#test#shpek@gmail.com#16.06.2021

@@ -513,8 +513,11 @@ void printTable(bool managerOrAdmin, vector<Appliances> data, bool search)
         {
             AppliancessAll.add_row(Row_t{ "№ в базе", "Тип техники", "Производитель", "Модель", "Цвет корпуса", "Стоимость" });
         }
+        // добавление строк в таблицу
+        int a = 0; // переменная для количества строк в таблице (если у пользователя был пропуск строк с проданным товаром)
         for (size_t i = 0; i < data.size(); i++)
         {
+            // для админа и менеджера
             if (managerOrAdmin) {
                 AppliancessAll.add_row(Row_t{
                     to_string(data[i].id),
@@ -531,23 +534,49 @@ void printTable(bool managerOrAdmin, vector<Appliances> data, bool search)
             }
             else
             {
-                AppliancessAll.add_row(Row_t{
-                    to_string(data[i].id),
-                    data[i].Appliancesequipment.type,
-                    data[i].Appliancesequipment.name,
-                    data[i].Appliancesequipment.model,
-                    data[i].Appliancesequipment.color,
-                    to_string(data[i].cost)
-                    });
+                // для пользователя, если поле buyer пустое, то строку добавляем, иначе нет (имитация вида, что товар куплен)
+                if (data[i].buyer == "") {
+                    AppliancessAll.add_row(Row_t{
+                        to_string(data[i].id),
+                        data[i].Appliancesequipment.type,
+                        data[i].Appliancesequipment.name,
+                        data[i].Appliancesequipment.model,
+                        data[i].Appliancesequipment.color,
+                        to_string(data[i].cost)
+                        });
+                    ++a;
+                }
+
             }
         }
         if (search)
         {
-            AppliancessAll.add_row(Row_t{ "Найдено бытовой техникемобилей: ", to_string(data.size()), "", "", "", "", "", "", "", "" });
+            // фраза ИТОГО для поиска
+            if (managerOrAdmin)
+            {
+                // у админиа или менеджера
+                AppliancessAll.add_row(Row_t{ "Найдено бытовой техники: ", to_string(data.size()), "", "", "", "", "", "", "", "" });
+            }
+            else
+            {
+                // у пользователя
+                AppliancessAll.add_row(Row_t{ "Найдено бытовой техники: ", to_string(data.size()), "", "", "", "" });
+            }
         }
         else 
         {
-            AppliancessAll.add_row(Row_t{ "Итого бытовой техники: ", to_string(data.size()), "", "", "", "" });
+            // фраза ИТОГО для обычного вывода таблицы
+            if (managerOrAdmin)
+            {
+                // у админиа или менеджера
+                AppliancessAll.add_row(Row_t{ "Итого бытовой техники: ", to_string(data.size()), "", "", "", "", "", "", "", "" });
+            }
+            else
+            {
+                // у пользователя
+                AppliancessAll.add_row(Row_t{ "Итого бытовой техники: ", to_string(data.size()), "", "", "", "" });
+            }
+            
         }
 
         AppliancessAll.column(0).format().font_align(FontAlign::center);
@@ -562,7 +591,7 @@ void printTable(bool managerOrAdmin, vector<Appliances> data, bool search)
             AppliancessAll.column(8).format().font_align(FontAlign::center);
             AppliancessAll.column(9).format().font_align(FontAlign::center);
         }
-        int a = data.size() + 1;
+        ++a; // всего строк посчитано было при добавлении, а выделить зеленым нужно дополнительную, поэтому инкрементируем на единицу
         if (managerOrAdmin) {
             for (size_t i = 0; i < 10; ++i) {
                 AppliancessAll[0][i].format().font_color(Color::yellow).font_style({ FontStyle::bold });
@@ -1111,7 +1140,7 @@ void GetChoiceMenuAdmin()
                 cout << "  Поиск техники в каталоге" << endl;
                 while (ok == false)
                 {
-                    continueAnsw = getValueInt("\nВарианты поиска?\n1 - по производителю\n2 - по типу\n3 - назад\n4 - выход\n");
+                    continueAnsw = getValueInt("\nВарианты поиска?\n1 - По типу\n2 - По производителю\n3 - Назад\n4 - Выход\n");
                     if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
                     {
                         ok = true;
@@ -1415,7 +1444,7 @@ void GetChoiceMenuManager()
         cout << "  Поиск техники в каталоге" << endl;
         while (ok == false)
         {
-            continueAnsw = getValueInt("\nВарианты поиска?\n1 - по производителю\n2 - по типу\n3 - Назад\n4 - Выход\n");
+            continueAnsw = getValueInt("\nВарианты поиска?\n1 - По типу\n2 - По производителю\n3 - Назад\n4 - Выход\n");
             if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
             {
                 ok = true;
@@ -1449,7 +1478,7 @@ void GetChoiceMenuManager()
 
 void GetChoiceMenuUser()
 {
-    system("cls");
+    system("cls");    
     if (!fileCreate || !availabilityAppliances)
     {
         cout << "     Базы бытовой техники не существует" << endl;
@@ -1519,7 +1548,7 @@ void GetChoiceMenuUser()
         cout << "  Поиск техники в каталоге" << endl;
         while (ok == false)
         {
-            continueAnsw = getValueInt("\nВарианты поиска?\n1 - по модели\n2 - по цвету\n3 - Назад\n4 - Выход\n");
+            continueAnsw = getValueInt("\nВарианты поиска?\n1 - По типу\n2 - По производителю\n3 - Назад\n4 - Выход\n");
             if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
             {
                 ok = true;
