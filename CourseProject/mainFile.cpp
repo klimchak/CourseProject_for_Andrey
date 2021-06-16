@@ -1375,6 +1375,11 @@ int main(int argc, char* argv[])
     // установка локали
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
+    // развернуть консоль
+    keybd_event(VK_MENU, 0x38, 0, 0);
+    keybd_event(VK_RETURN, 0x1c, 0, 0);
+    keybd_event(VK_RETURN, 0x1c, KEYEVENTF_KEYUP, 0);
+    keybd_event(VK_MENU, 0x38, KEYEVENTF_KEYUP, 0);
     fileCreate = SearchDataFile();
     // проверка фала админа
     if (!CreateOrDeleteAdminFile())
