@@ -540,16 +540,14 @@ void printTable(bool managerOrAdmin, vector<Appliances> data, bool search)
                     to_string(data[i].cost)
                     });
             }
-
-
         }
         if (search)
         {
-            AppliancessAll.add_row(Row_t{ "Найдено бытовой техникемобилей: ", to_string(data.size()), "", "", "", "", "" });
+            AppliancessAll.add_row(Row_t{ "Найдено бытовой техникемобилей: ", to_string(data.size()), "", "", "", "", "", "", "", "" });
         }
         else 
         {
-            AppliancessAll.add_row(Row_t{ "Итого бытовой техники: ", to_string(data.size()), "", "", "", "", "" });
+            AppliancessAll.add_row(Row_t{ "Итого бытовой техники: ", to_string(data.size()), "", "", "", "" });
         }
 
         AppliancessAll.column(0).format().font_align(FontAlign::center);
@@ -612,7 +610,6 @@ void searchAndPrintTable(int change, bool managerOrAdmin)
         bool ok = false;
         string query;
         vector<Appliances> searchAppliancess;
-        //int continueAnsw;
         switch (change)
         {
         case 1:
@@ -643,40 +640,6 @@ void searchAndPrintTable(int change, bool managerOrAdmin)
             {
                 printTable(false, searchAppliancess, true);
             }
-            /*
-            Table Appliancess;
-            Appliancess.add_row(Row_t{ "№ в базе", "Модель", "Дата поступления", "Дата продажи", "Стоимость",
-                                    "Кузов", "Цвет", "Комплектация" });
-            for (size_t i = 0; i < searchAppliancess.size(); i++)
-            {
-                Appliancess.add_row(Row_t{ 
-                    to_string(searchAppliancess[i].id), 
-                    searchAppliancess[i].model,
-                    searchAppliancess[i].receipt_date,
-                    searchAppliancess[i].departure_date,
-                    to_string(searchAppliancess[i].cost), 
-                    searchAppliancess[i].Appliancesequipment.body, 
-                    searchAppliancess[i].Appliancesequipment.color,
-                    searchAppliancess[i].Appliancesequipment.equipment 
-                    });
-            }
-            Appliancess.add_row(Row_t{ "Найдено бытовой техникемобилей: ", to_string(searchAppliancess.size()), "", "", "", "", "" });
-            Appliancess.column(0).format().font_align(FontAlign::center);
-            Appliancess.column(1).format().font_align(FontAlign::center);
-            Appliancess.column(2).format().font_align(FontAlign::center);
-            Appliancess.column(3).format().font_align(FontAlign::center);
-            Appliancess.column(4).format().font_align(FontAlign::center);
-            Appliancess.column(5).format().font_align(FontAlign::center);
-            Appliancess.column(6).format().font_align(FontAlign::center);
-            Appliancess.column(7).format().font_align(FontAlign::center);
-            int a = searchAppliancess.size() + 1;
-            for (size_t i = 0; i < 8; ++i) {
-                Appliancess[0][i].format().font_color(Color::yellow).font_style({ FontStyle::bold });
-                Appliancess[a][i].format().font_color(Color::green).font_style({ FontStyle::bold });
-            }
-            std::cout << Appliancess << "\n\n";
-            searchAppliancess.clear();
-            */
         }
         else
         {
