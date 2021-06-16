@@ -1407,9 +1407,11 @@ int main(int argc, char* argv[])
                     break;
                 case 2:
                     cout << "    Выход!\n";
+                    system("pause");
                     exit(0);
                 default:
                     cout << "    Выход!\n";
+                    system("pause");
                     exit(0);
                 }
             }
