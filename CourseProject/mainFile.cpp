@@ -531,6 +531,7 @@ void printTable(bool managerOrAdmin, vector<Appliances> data, bool search)
                     data[i].buyerEmail,
                     data[i].departure_date
                     });
+                ++a;
             }
             else
             {
@@ -544,7 +545,7 @@ void printTable(bool managerOrAdmin, vector<Appliances> data, bool search)
                         data[i].Appliancesequipment.color,
                         to_string(data[i].cost)
                         });
-                    ++a;
+                    
                 }
 
             }
@@ -788,6 +789,7 @@ bool changeAppliancesInMemory(bool userShop)
     else
     {
         Appliances newAppliances = aggregationAppliancesData();
+        newAppliances.id = allAppliances[indexAppliances].id;
         allAppliances[indexAppliances] = newAppliances;
     }
 
@@ -1054,6 +1056,7 @@ void GetChoiceMenuAdmin()
             case 4:
                 system("cls");
                 cout << "Редактирование записи" << endl;
+                sortId();
                 printTable(true, allAppliances, false);
                 if (changeAppliancesInMemory(false))
                 {
@@ -1071,6 +1074,7 @@ void GetChoiceMenuAdmin()
             case 5:
                 system("cls");
                 cout << "Удаление записи" << endl;
+                sortId();
                 printTable(true, allAppliances, false);
                 if (deleteAppliancesInMemory())
                 {
@@ -1088,6 +1092,7 @@ void GetChoiceMenuAdmin()
             case 6:
                 system("cls");
                 cout << "Просмотр всей техники магазина" << endl;
+                sortId();
                 printTable(true, allAppliances, false);
                 if (availabilityAppliances) {
                     while (ok == false)
@@ -1138,6 +1143,7 @@ void GetChoiceMenuAdmin()
             case 7:
                 system("cls");
                 cout << "  Поиск техники в каталоге" << endl;
+                sortId();
                 while (ok == false)
                 {
                     continueAnsw = getValueInt("\nВарианты поиска?\n1 - По типу\n2 - По производителю\n3 - Назад\n4 - Выход\n");
@@ -1358,6 +1364,7 @@ void GetChoiceMenuManager()
     case 2:
         system("cls");
         cout << "Редактирование записи" << endl;
+        sortId();
         printTable(true, allAppliances, false);
         if (changeAppliancesInMemory(false))
         {
@@ -1375,6 +1382,7 @@ void GetChoiceMenuManager()
     case 3:
         system("cls");
         cout << "Удаление записи" << endl;
+        sortId();
         printTable(true, allAppliances, false);
         if (deleteAppliancesInMemory())
         {
@@ -1392,6 +1400,7 @@ void GetChoiceMenuManager()
     case 4:
         system("cls");
         cout << "Просмотр всей техники магазина" << endl;
+        sortId();
         printTable(true, allAppliances, false);
         if (availabilityAppliances) {
             while (ok == false)
@@ -1442,6 +1451,7 @@ void GetChoiceMenuManager()
     case 5:
         system("cls");
         cout << "  Поиск техники в каталоге" << endl;
+        sortId();
         while (ok == false)
         {
             continueAnsw = getValueInt("\nВарианты поиска?\n1 - По типу\n2 - По производителю\n3 - Назад\n4 - Выход\n");
@@ -1496,6 +1506,7 @@ void GetChoiceMenuUser()
     case 1:
         system("cls");
         cout << "Просмотр всей техники магазина" << endl;
+        sortId();
         printTable(false, allAppliances, false);
         if (availabilityAppliances) {
             while (ok == false)
@@ -1546,6 +1557,7 @@ void GetChoiceMenuUser()
     case 2:
         system("cls");
         cout << "  Поиск техники в каталоге" << endl;
+        sortId();
         while (ok == false)
         {
             continueAnsw = getValueInt("\nВарианты поиска?\n1 - По типу\n2 - По производителю\n3 - Назад\n4 - Выход\n");
@@ -1574,6 +1586,7 @@ void GetChoiceMenuUser()
     case 3:
         system("cls");
         cout << "Оформление покупки" << endl;
+        sortId();
         printTable(false, allAppliances, false);
         if (changeAppliancesInMemory(true))
         {
