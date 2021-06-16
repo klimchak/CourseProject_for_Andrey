@@ -27,9 +27,9 @@ using nonstd::variant;
 using Row_t = std::vector<variant<std::string, const char*, Table>>;
 
 
-                                                                /*
-                                                                структуры программы
-                                                                */
+                    //структуры программы 
+
+// данные о пользователе
 struct Profile
 {
     string name;
@@ -58,9 +58,7 @@ struct Appliances
     string departure_date;
 };
 
-                                                                /*
-                                                                глобальные переменные
-                                                                */
+                            //глобальные переменные
 
 bool choiceCreateFD = false;
 bool fileCreate;
@@ -70,11 +68,8 @@ vector<Appliances> allAppliances;
 int varSort = 1;
 string userNameInProgramm;
 
-                                                                /*
-                                                                объявление всех функций
-                                                                */
-                                                                // проверка на наличие файла данных
-
+                            // объявление всех функций
+                            
 // проеверка файла админа
 bool CreateOrDeleteAdminFile();
 // запись данных в файла профиля
@@ -114,7 +109,7 @@ void getAllAppliancesFD();
 bool deleteAppliancesInMemory();
 // изменение данных бытовой технике в памяти и перезапись в файл
 bool changeAppliancesInMemory(bool userShop);
-//сортировка
+                            //сортировка
 // компаратор по модели
 bool comparareName(const Appliances lhs, const Appliances rhs);
 // компаратор по цвету
@@ -132,9 +127,9 @@ void sortType();
 void sortId();
 // сортировка по стоимости
 void sortCost();
-                                                                /*
-                                                                функции вывода меню
-                                                                */
+
+                            //функции вывода меню
+
 void PrintMenuMain()
 {
     cout << "          Меню входа\n";
@@ -202,9 +197,8 @@ void PrintMenuUser()
     cout << "Ваш выбор: ";
 }
 
-                                                                /*
-                                                                функции работы c пользователями
-                                                                */
+                            // функции работы c пользователями
+                            
 // запись данных в файла профиля
 string WorkProfileFD(Profile user, bool rePass, bool del)
 {
@@ -221,32 +215,17 @@ string WorkProfileFD(Profile user, bool rePass, bool del)
         }
         else
         {
-            if (user.level == 1)
-            {
-                out = "    Удален администратор " + user.name + "\n";
-            }
-            if (user.level == 2)
-            {
-                out = "    Удален менеджер " + user.name + "\n";
-            }
-            if (user.level == 3)
-            {
-                out = "    Удален пользователь " + user.name + "\n";
-            }
+            if (user.level == 1) { out = "    Удален администратор " + user.name + "\n"; }
+            if (user.level == 2) { out = "    Удален менеджер " + user.name + "\n"; }
+            if (user.level == 3) { out = "    Удален пользователь " + user.name + "\n"; }
         }
         return out;
     }
     else
     {
         string reUserName = user.name + ".txt";
-        if (rePass)
-        {
-            fout.open(reUserName, ios_base::trunc);
-        }
-        else
-        {
-            fout.open(reUserName, ios_base::app);
-        }
+        if (rePass) { fout.open(reUserName, ios_base::trunc); }
+        else { fout.open(reUserName, ios_base::app); }
         fout << user.name + "\n";
         fout << user.pass + "\n";
         fout << user.level;
@@ -254,33 +233,15 @@ string WorkProfileFD(Profile user, bool rePass, bool del)
         string out;
         if (rePass)
         {
-            if (user.level == 2)
-            {
-                out = "    Изменен пароль администратора " + user.name + "\n";
-            }
-            if (user.level == 2)
-            {
-                out = "    Изменен пароль менеджера " + user.name + "\n";
-            }
-            if (user.level == 3)
-            {
-                out = "    Изменен пароль пользователя " + user.name + "\n";
-            }
+            if (user.level == 2) { out = "    Изменен пароль администратора " + user.name + "\n"; }
+            if (user.level == 2) { out = "    Изменен пароль менеджера " + user.name + "\n"; }
+            if (user.level == 3) { out = "    Изменен пароль пользователя " + user.name + "\n"; }
         }
         else
         {
-            if (user.level == 2)
-            {
-                out = "    Создан администратор " + user.name + "\n";
-            }
-            if (user.level == 2)
-            {
-                out = "    Создан менеджер " + user.name + "\n";
-            }
-            if (user.level == 3)
-            {
-                out = "    Создан пользователь " + user.name + "\n";
-            }
+            if (user.level == 2) { out = "    Создан администратор " + user.name + "\n"; }
+            if (user.level == 2) { out = "    Создан менеджер " + user.name + "\n"; }
+            if (user.level == 3) { out = "    Создан пользователь " + user.name + "\n"; }
         }
         return out;
     }
@@ -299,25 +260,17 @@ Profile GetNewProfileData(bool ifUser)
         while (ok == false)
         {
            i = getValueInt("    Введите уровень доступа:\n1 - Администратор\n2 - Менеджер\n3 - Пользователь\nВаш выбор: ");
-           if (i == 1 || i == 2 || i == 3) {
-               ok = true;
-           }
-           else {
-               cout << "Введите одно из указанных значений" << endl;
-           }
+           if (i == 1 || i == 2 || i == 3) { ok = true; }
+           else { cout << "Введите одно из указанных значений" << endl; }
         }
         fileUser.level = i;
     }
-    else
-    {
-        fileUser.level = 3;
-    }
+    else { fileUser.level = 3; }
     return fileUser;
 }
 
-                                                                /*
-                                                                    функции получения значения с клавиатуры
-                                                                */
+                            // функции получения значения с клавиатуры
+
 
 int getValueInt(string mess)
 {
@@ -348,43 +301,21 @@ string getValueStr(string mess)
     }
 }
 
-                                                                /*
-                                                                    функции работы с файлом базы данных
-                                                                */
-
+                            // функции работы с файлом базы данных
 
 // сортировка
 // компараторы
 bool comparareName(const Appliances lhs, const Appliances rhs) {
-    if (varSort == 1)
-    {
-        return lhs.Appliancesequipment.name > rhs.Appliancesequipment.name;
-    }
-    else
-    {
-        return lhs.Appliancesequipment.name < rhs.Appliancesequipment.name;
-    }
-
+    if (varSort == 1) { return lhs.Appliancesequipment.name > rhs.Appliancesequipment.name; }
+    else { return lhs.Appliancesequipment.name < rhs.Appliancesequipment.name; }
 }
 bool comparareType(const Appliances lhs, const Appliances rhs) {
-    if (varSort == 1)
-    {
-        return lhs.Appliancesequipment.type > rhs.Appliancesequipment.type;
-    }
-    else
-    {
-        return lhs.Appliancesequipment.type < rhs.Appliancesequipment.type;
-    }
+    if (varSort == 1) {  return lhs.Appliancesequipment.type > rhs.Appliancesequipment.type; }
+    else { return lhs.Appliancesequipment.type < rhs.Appliancesequipment.type; }
 }
 bool comparareCost(const Appliances lhs, const Appliances rhs) {
-    if (varSort == 1)
-    {
-        return lhs.cost > rhs.cost;
-    }
-    else
-    {
-        return lhs.cost < rhs.cost;
-    }
+    if (varSort == 1) { return lhs.cost > rhs.cost; }
+    else { return lhs.cost < rhs.cost; }
 }
 bool comparareId(const Appliances lhs, const Appliances rhs) {
     return lhs.id < rhs.id;
@@ -392,38 +323,20 @@ bool comparareId(const Appliances lhs, const Appliances rhs) {
 // сортировка по модели
 void sortName() {
     sort( allAppliances.begin(),  allAppliances.end(), comparareName);
-    if (varSort == 1)
-    {
-        varSort = 2;
-    }
-    else
-    {
-        varSort = 1;
-    }
+    if (varSort == 1) { varSort = 2; }
+    else { varSort = 1; }
 }
 // сортировка по цвету
 void sortType() {
     sort( allAppliances.begin(),  allAppliances.end(), comparareType);
-    if (varSort == 1)
-    {
-        varSort = 2;
-    }
-    else
-    {
-        varSort = 1;
-    }
+    if (varSort == 1) { varSort = 2; }
+    else { varSort = 1; }
 }
 // сортировка по стоимости
 void sortCost() {
     sort( allAppliances.begin(),  allAppliances.end(), comparareCost);
-    if (varSort == 1)
-    {
-        varSort = 2;
-    }
-    else
-    {
-        varSort = 1;
-    }
+    if (varSort == 1) { varSort = 2; }
+    else { varSort = 1; }
 }
 // сортировка по id для упорядоченной записи в файл, а так же для автоматической нумерации id
 void sortId() {
@@ -435,9 +348,7 @@ vector<string> split(const string& s, char delim) {
     vector<string> result;
     stringstream ss(s);
     string item;
-    while (getline(ss, item, delim)) {
-        result.push_back(item);
-    }
+    while (getline(ss, item, delim)) { result.push_back(item); }
     return result;
 }
 
@@ -466,10 +377,7 @@ bool creatRecordInFD(bool atMemory)
         std::ofstream out("dataFile.txt", std::ios::trunc);
         if (out.is_open())
         {
-            for (string strInFile : allString)
-            {
-                out << strInFile << std::endl;
-            }
+            for (string strInFile : allString) { out << strInFile << std::endl; }
         }
         out.close();
         return true;
@@ -489,10 +397,7 @@ bool creatRecordInFD(bool atMemory)
             + "#" + newAppliances.buyerEmail
             + "#" + newAppliances.departure_date;
         std::ofstream out("dataFile.txt", std::ios::app);
-        if (out.is_open())
-        {
-            out << outStr << std::endl;
-        }
+        if (out.is_open()) {  out << outStr << std::endl; }
         out.close();
         return true;
     }
@@ -553,30 +458,14 @@ void printTable(bool managerOrAdmin, vector<Appliances> data, bool search)
         if (search)
         {
             // фраза ИТОГО для поиска
-            if (managerOrAdmin)
-            {
-                // у админиа или менеджера
-                AppliancessAll.add_row(Row_t{ "Найдено бытовой техники: ", to_string(data.size()), "", "", "", "", "", "", "", "" });
-            }
-            else
-            {
-                // у пользователя
-                AppliancessAll.add_row(Row_t{ "Найдено бытовой техники: ", to_string(data.size()), "", "", "", "" });
-            }
+            if (managerOrAdmin) { AppliancessAll.add_row(Row_t{ "Найдено бытовой техники: ", to_string(data.size()), "", "", "", "", "", "", "", "" }); } // у админиа или менеджера
+            else { AppliancessAll.add_row(Row_t{ "Найдено бытовой техники: ", to_string(data.size()), "", "", "", "" }); } // у пользователя
         }
         else 
         {
             // фраза ИТОГО для обычного вывода таблицы
-            if (managerOrAdmin)
-            {
-                // у админиа или менеджера
-                AppliancessAll.add_row(Row_t{ "Итого бытовой техники: ", to_string(data.size()), "", "", "", "", "", "", "", "" });
-            }
-            else
-            {
-                // у пользователя
-                AppliancessAll.add_row(Row_t{ "Итого бытовой техники: ", to_string(data.size()), "", "", "", "" });
-            }
+            if (managerOrAdmin) { AppliancessAll.add_row(Row_t{ "Итого бытовой техники: ", to_string(data.size()), "", "", "", "", "", "", "", "" }); } // у админиа или менеджера
+            else { AppliancessAll.add_row(Row_t{ "Итого бытовой техники: ", to_string(data.size()), "", "", "", "" }); } // у пользователя
             
         }
 
@@ -606,7 +495,6 @@ void printTable(bool managerOrAdmin, vector<Appliances> data, bool search)
                 AppliancessAll[a][i].format().font_color(Color::green).font_style({ FontStyle::bold });
             }
         }
-
         std::cout << AppliancessAll << "\n\n";
     }
     else
@@ -651,25 +539,13 @@ void searchAndPrintTable(int change, bool managerOrAdmin)
         }
         for (size_t i = 0; i <  allAppliances.size(); i++)
         {
-            if (change == 1 && search(query,  allAppliances[i].Appliancesequipment.type))
-            {
-                searchAppliancess.push_back( allAppliances[i]);
-            }
-            if (change == 2 && search(query,  allAppliances[i].Appliancesequipment.name))
-            {
-                searchAppliancess.push_back( allAppliances[i]);
-            }
+            if (change == 1 && search(query,  allAppliances[i].Appliancesequipment.type)) { searchAppliancess.push_back( allAppliances[i]); }
+            if (change == 2 && search(query,  allAppliances[i].Appliancesequipment.name)) { searchAppliancess.push_back( allAppliances[i]); }
         }
         if (searchAppliancess.size() > 0)
         {
-            if (managerOrAdmin)
-            {
-                printTable(true, searchAppliancess, true);
-            }
-            else 
-            {
-                printTable(false, searchAppliancess, true);
-            }
+            if (managerOrAdmin) { printTable(true, searchAppliancess, true); }
+            else { printTable(false, searchAppliancess, true); }
         }
         else
         {
@@ -700,7 +576,7 @@ void getAllAppliancesFD()
     }
     else
     {
-         allAppliances.clear();
+        allAppliances.clear();
         while (getline(fin, line))
         {
             amountOfAppliances++;
@@ -747,14 +623,8 @@ void getAllAppliancesFD()
                 }
             }
              allAppliances.push_back(interimAppliances);
-            if ( allAppliances.size() > 0)
-            {
-                availabilityAppliances = true;
-            }
-            else
-            {
-                availabilityAppliances = false;
-            }
+            if ( allAppliances.size() > 0) { availabilityAppliances = true; }
+            else { availabilityAppliances = false; }
         }
     }
 }
@@ -766,16 +636,9 @@ bool changeAppliancesInMemory(bool userShop)
     int indexAppliances = -1;
     for (size_t i = 0; i <  allAppliances.size(); i++)
     {
-        if ( allAppliances[i].id == searchAppliancesLN)
-        {
-            indexAppliances = i;
-        }
-
+        if ( allAppliances[i].id == searchAppliancesLN) { indexAppliances = i; } 
     }
-    if (indexAppliances < 0)
-    {
-        return false;
-    }
+    if (indexAppliances < 0) { return false; }
     if (userShop)
     {
         allAppliances[indexAppliances].buyer = userNameInProgramm;
@@ -793,14 +656,8 @@ bool changeAppliancesInMemory(bool userShop)
         allAppliances[indexAppliances] = newAppliances;
     }
 
-    if (creatRecordInFD(true))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    if (creatRecordInFD(true)) { return true; }
+    else { return false; }
 }
 
 // удаление данных бытовой технике в памяти и перезапись в файл
@@ -811,38 +668,20 @@ bool deleteAppliancesInMemory()
     auto iter =  allAppliances.cbegin();
     for (size_t i = 0; i <  allAppliances.size(); i++)
     {
-        if ( allAppliances[i].id == searchAppliancesLN)
-        {
-            indexAppliances = i;
-        }
-
+        if ( allAppliances[i].id == searchAppliancesLN) { indexAppliances = i; } 
     }
-    if (indexAppliances < 0)
-    {
-        return false;
-    }
-     allAppliances.erase(iter + indexAppliances);
-    if (creatRecordInFD(true))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    if (indexAppliances < 0) { return false; }
+    allAppliances.erase(iter + indexAppliances);
+    if (creatRecordInFD(true)) { return true; }
+    else { return false; }
 }
 
 // сбор сведений по бытовой технике
 Appliances aggregationAppliancesData() {
     Appliances newAppliances;
     sortId();
-    if (allAppliances.size() == 0) {
-        newAppliances.id = 1;
-    }
-    else 
-    {
-        newAppliances.id = allAppliances[allAppliances.size() - 1].id + 1;
-    }
+    if (allAppliances.size() == 0) { newAppliances.id = 1; }
+    else { newAppliances.id = allAppliances[allAppliances.size() - 1].id + 1; }
     newAppliances.Appliancesequipment.type = getValueStr("Укажите тип бытовой технике");
     newAppliances.Appliancesequipment.name = getValueStr("Укажите производителя бытовой технике");
     newAppliances.Appliancesequipment.model = getValueStr("Укажите модель бытовой технике");
@@ -856,17 +695,11 @@ Appliances aggregationAppliancesData() {
 bool SearchDataFile()
 {
     ifstream fin("dataFile.txt", ios_base::in);
-    if (!fin.is_open())
-    {
-        return false;
-    }
+    if (!fin.is_open()) { return false; }
     else
     {
         fin.close();
-        if (!availabilityAppliances)
-        {
-            getAllAppliancesFD();
-        }
+        if (!availabilityAppliances) { getAllAppliancesFD(); }
         return true;
     }
 }
@@ -882,13 +715,10 @@ bool CreateOrDeleteFD(bool createOrDelete)
     }
     else
     {
-        if (remove("dataFile.txt") != 0)
-        {
-            return false;
-        }
-        else
-        {
-             allAppliances.clear();
+        if (remove("dataFile.txt") != 0) { return false; }
+        else 
+        { 
+            allAppliances.clear();
             return true;
         }
     }
@@ -898,28 +728,20 @@ bool CreateOrDeleteFD(bool createOrDelete)
 bool CreateOrDeleteAdminFile()
 {
     ifstream fin("admin.txt", ios_base::in);
-    if (!fin.is_open())
-    {
-        return false;
-    }
-    else
-    {
+    if (!fin.is_open()) { return false; }
+    else 
+    { 
         fin.close();
-        return true;
+        return true; 
     }
 }
 
-                                                                    /*
-                                                                    функции работы меню
-                                                                    */
+                                    // функции работы меню
 
 void GetChoiceMenuAdmin()
 {
     system("cls");
-    if (!fileCreate)
-    {
-        cout << "Базы бытовой техники не существует" << endl;
-    }
+    if (!fileCreate) { cout << "Базы бытовой техники не существует" << endl; }
     bool file = SearchDataFile();
     bool ok = false;
     if (!SearchDataFile() && !choiceCreateFD)
@@ -1023,14 +845,8 @@ void GetChoiceMenuAdmin()
                 else
                 {
                     cout << "Ошибка при удалении. Повторите попытку позже." << endl;
-                    if (SearchDataFile()) 
-                    {
-                        fileCreate = true;
-                    }
-                    else
-                    {
-                        fileCreate = false;
-                    }
+                    if (SearchDataFile()) { fileCreate = true; }
+                    else { fileCreate = false; }
                     system("pause");
                     GetChoiceMenuAdmin();
                 }
@@ -1128,10 +944,7 @@ void GetChoiceMenuAdmin()
                                 break;
                             }
                         }
-                        else
-                        {
-                            cout << "Введите одно из указанных чисел.\n" << endl;
-                        }
+                        else { cout << "Введите одно из указанных чисел.\n" << endl; }
                     }
                 }
                 else
@@ -1147,19 +960,10 @@ void GetChoiceMenuAdmin()
                 while (ok == false)
                 {
                     continueAnsw = getValueInt("\nВарианты поиска?\n1 - По типу\n2 - По производителю\n3 - Назад\n4 - Выход\n");
-                    if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
-                    {
-                        ok = true;
-                    }
-                    else
-                    {
-                        cout << "Введите одно из указанных чисел.\n";
-                    }
+                    if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4) { ok = true; } 
+                    else { cout << "Введите одно из указанных чисел.\n"; }
                 }
-                if (continueAnsw == 3)
-                {
-                    GetChoiceMenuAdmin();
-                }
+                if (continueAnsw == 3) { GetChoiceMenuAdmin(); }
                 if (continueAnsw == 4)
                 {
                     cout << "Выход!";
@@ -1174,19 +978,13 @@ void GetChoiceMenuAdmin()
                 cout << "Добавление новой учетной записи" << endl;
                 newUser = GetNewProfileData(false);
                 fin.open(newUser.name, ios_base::in | std::ios::binary);
-                if (!fin.is_open()) // если файл не открыт
+                if (!fin.is_open())
                 {
                     while (ok == false)
                     {
                         continueAnsw = getValueInt("Продолжаем?\n1 - Да\n2 - нет\n");
-                        if (continueAnsw == 1 || continueAnsw == 2)
-                        {
-                            ok = true;
-                        }
-                        else
-                        {
-                            cout << "Введите одно из указанных чисел.\n" << endl;
-                        }
+                        if (continueAnsw == 1 || continueAnsw == 2) { ok = true; }
+                        else  { cout << "Введите одно из указанных чисел.\n" << endl; }
                     }
                     if (continueAnsw == 1)
                     {
@@ -1221,7 +1019,7 @@ void GetChoiceMenuAdmin()
                 newUser.name = oldUserName;
                 varUser = oldUserName + ".txt";
                 fin.open(varUser, ios_base::in);
-                if (!fin.is_open()) // если файл не открыт
+                if (!fin.is_open())
                 {
                     cout << "    Пользователь с таким логином не найден.\n";
                     system("pause");
@@ -1236,14 +1034,8 @@ void GetChoiceMenuAdmin()
                     while (ok == false)
                     {
                         continueAnsw = getValueInt("    Продолжаем?\n1 - Да\n2 - нет\n");
-                        if (continueAnsw == 1 || continueAnsw == 2)
-                        {
-                            ok = true;
-                        }
-                        else
-                        {
-                            cout << "    Введите одно из указанных чисел.\n";
-                        }
+                        if (continueAnsw == 1 || continueAnsw == 2) { ok = true; }
+                        else { cout << "    Введите одно из указанных чисел.\n"; }
                     }
                     if (continueAnsw == 1)
                     {
@@ -1276,10 +1068,7 @@ void GetChoiceMenuAdmin()
                     oldUserName = getValueStr("    Введите логин удаляемого объекта");
                     string interimFN = oldUserName + ".txt";
                     ifstream finn(interimFN, ios_base::in);
-                    if (!finn.is_open()) // если файл не открыт
-                    {
-                        cout << "    Пользователь с таким логином не найден!\n";
-                    }
+                    if (!finn.is_open()) { cout << "    Пользователь с таким логином не найден!\n"; }
                     else
                     {
                         finn.close();
@@ -1290,14 +1079,8 @@ void GetChoiceMenuAdmin()
                 while (ok == false)
                 {
                     continueAnsw = getValueInt("\nПродолжаем?\n1 - Да\n2 - нет\n");
-                    if (continueAnsw == 1 || continueAnsw == 2)
-                    {
-                        ok = true;
-                    }
-                    else
-                    {
-                        cout << "Введите одно из указанных чисел.\n";
-                    }
+                    if (continueAnsw == 1 || continueAnsw == 2) { ok = true; }
+                    else { cout << "Введите одно из указанных чисел.\n"; }
                 }
                 if (continueAnsw == 1)
                 {
@@ -1436,10 +1219,7 @@ void GetChoiceMenuManager()
                         break;
                     }
                 }
-                else
-                {
-                    cout << "Введите одно из указанных чисел.\n" << endl;
-                }
+                else { cout << "Введите одно из указанных чисел.\n" << endl; }
             }
         }
         else
@@ -1455,19 +1235,10 @@ void GetChoiceMenuManager()
         while (ok == false)
         {
             continueAnsw = getValueInt("\nВарианты поиска?\n1 - По типу\n2 - По производителю\n3 - Назад\n4 - Выход\n");
-            if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
-            {
-                ok = true;
-            }
-            else
-            {
-                cout << "Введите одно из указанных чисел.\n";
-            }
+            if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4) { ok = true; }
+            else { cout << "Введите одно из указанных чисел.\n"; }
         }
-        if (continueAnsw == 3)
-        {
-            GetChoiceMenuManager();
-        }
+        if (continueAnsw == 3) { GetChoiceMenuManager(); }
         if (continueAnsw == 4)
         {
             cout << "Выход!";
@@ -1542,10 +1313,7 @@ void GetChoiceMenuUser()
                         break;
                     }
                 }
-                else
-                {
-                    cout << "Введите одно из указанных чисел.\n" << endl;
-                }
+                else { cout << "Введите одно из указанных чисел.\n" << endl; }
             }
         }
         else
@@ -1561,19 +1329,10 @@ void GetChoiceMenuUser()
         while (ok == false)
         {
             continueAnsw = getValueInt("\nВарианты поиска?\n1 - По типу\n2 - По производителю\n3 - Назад\n4 - Выход\n");
-            if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
-            {
-                ok = true;
-            }
-            else
-            {
-                cout << "Введите одно из указанных чисел.\n";
-            }
+            if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4) { ok = true; }
+            else { cout << "Введите одно из указанных чисел.\n"; }
         }
-        if (continueAnsw == 3)
-        {
-            GetChoiceMenuUser();
-        }
+        if (continueAnsw == 3) { GetChoiceMenuUser(); }
         if (continueAnsw == 4)
         {
             cout << "Выход!";
@@ -1627,9 +1386,9 @@ int main(int argc, char* argv[])
         while (ok == false)
         {
             system("cls");
-            cout << "                             ===================================================" << endl;
-            cout << "                                          Администратор не обнаружен            " << endl;
-            cout << "                             ===================================================" << endl;
+            cout << " ===================================================" << endl;
+            cout << "              Администратор не обнаружен            " << endl;
+            cout << "===================================================" << endl;
             continueAnsw = getValueInt("    Создать админа?\n1 - Да\n2 - нет\n");
             if (continueAnsw == 1 || continueAnsw == 2)
             {
@@ -1654,10 +1413,7 @@ int main(int argc, char* argv[])
                     exit(0);
                 }
             }
-            else
-            {
-                cout << "    Введите одно из указанных чисел.\n" << endl;
-            }
+            else { cout << "    Введите одно из указанных чисел.\n" << endl; }
         }
     }
     // отображение меню выбора пользователя
@@ -1694,14 +1450,8 @@ int main(int argc, char* argv[])
                             while (choiceLoginStep == false)
                             {
                                 continueAnsw = getValueInt("Ваш выбор:\n1 - Повторить ввод логина\n2 - Выход\n");
-                                if (continueAnsw == 1 || continueAnsw == 2)
-                                {
-                                    choiceLoginStep = true;
-                                }
-                                else
-                                {
-                                    cout << "Введите одно из указанных чисел.\n" << endl;
-                                }
+                                if (continueAnsw == 1 || continueAnsw == 2) { choiceLoginStep = true; }
+                                else { cout << "Введите одно из указанных чисел.\n" << endl; }
                             }
                             if (continueAnsw == 2)
                             {
@@ -1715,14 +1465,8 @@ int main(int argc, char* argv[])
                             while (okContin == false)
                             {
                                 continueAnswInterim = getValueInt("1 - Зарегистрировать пользователя\n2 - Ввести другой логин\n3 - Выйти\n");
-                                if (continueAnswInterim == 1 || continueAnswInterim == 2 || continueAnswInterim == 3)
-                                {
-                                    okContin = true;
-                                }
-                                else
-                                {
-                                    cout << "Введите одно из указанных чисел.\n" << endl;
-                                }
+                                if (continueAnswInterim == 1 || continueAnswInterim == 2 || continueAnswInterim == 3) { okContin = true; }
+                                else { cout << "Введите одно из указанных чисел.\n" << endl; }
                             }
 
                             if (continueAnswInterim == 1) {
@@ -1734,19 +1478,13 @@ int main(int argc, char* argv[])
                                 cout << "Добавление новой пользователя" << endl;
                                 newUser = GetNewProfileData(true);
                                 fin.open(newUser.name + ".txt", ios_base::in);
-                                if (!fin.is_open()) // если файл не открыт
+                                if (!fin.is_open())
                                 {
                                     while (okCreatProf == false)
                                     {
                                         continueAnsw = getValueInt("Продолжаем?\n1 - Да\n2 - нет\n");
-                                        if (continueAnsw == 1 || continueAnsw == 2)
-                                        {
-                                            okCreatProf = true;
-                                        }
-                                        else
-                                        {
-                                            cout << "Введите одно из указанных чисел.\n" << endl;
-                                        }
+                                        if (continueAnsw == 1 || continueAnsw == 2) { okCreatProf = true; }
+                                        else { cout << "Введите одно из указанных чисел.\n" << endl; }
                                     }
                                     if (continueAnsw == 1)
                                     {
@@ -1797,10 +1535,7 @@ int main(int argc, char* argv[])
                 {
                     system("cls");
                     string pass = getValueStr("Введите пароль:");
-                    if (pass == filePass)
-                    {
-                        okTwo = true;
-                    }
+                    if (pass == filePass) { okTwo = true; }
                     else
                     {
                         cout << "Ошибка пароля. Повторите ввод.\n";
@@ -1809,14 +1544,8 @@ int main(int argc, char* argv[])
                         while (okContin == false)
                         {
                             continueAnsw = getValueInt("Продолжаем?\n1 - Да\n2 - нет\n");
-                            if (continueAnsw == 1 || continueAnsw == 2)
-                            {
-                                okContin = true;
-                            }
-                            else
-                            {
-                                cout << "Введите одно из указанных чисел.\n" << endl;
-                            }
+                            if (continueAnsw == 1 || continueAnsw == 2) { okContin = true; }
+                            else { cout << "Введите одно из указанных чисел.\n" << endl; }
                         }
                         if (continueAnsw == 2)
                         {
@@ -1829,7 +1558,11 @@ int main(int argc, char* argv[])
             }
             if (profile == 1) { GetChoiceMenuAdmin(); }
             if (profile == 2) { GetChoiceMenuManager(); }
-            if (profile == 3) { userNameInProgramm = fileLogin; GetChoiceMenuUser(); }
+            if (profile == 3) 
+            { 
+                userNameInProgramm = fileLogin; 
+                GetChoiceMenuUser(); 
+            }
         }
         else if (continueAnsw == 4)
         {
@@ -1837,9 +1570,6 @@ int main(int argc, char* argv[])
             system("pause");
             exit(0);
         }
-        else
-        {
-            cout << "Введите одно из указанных чисел.\n" << endl;
-        }
+        else { cout << "Введите одно из указанных чисел.\n" << endl; }
     }
 }
