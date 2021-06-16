@@ -10,6 +10,8 @@
 #include <vector>
 #include <algorithm>
 #include <ctype.h>
+#include <iomanip>
+#include <ctime>
 #include "tabulate/table.hpp"
 
 using namespace std;
@@ -35,23 +37,25 @@ struct Profile
     int level;
 };
 
-// данные о самой машине
-struct AutoData
+// данные о бытовой технике
+struct AppliancesData
 {
-    string body;
+    string type;
+    string name;
+    string model;
     string color;
-    string equipment;
 };
 
-// общие сведения о машине
-struct Auto
+// общие сведения о бытовой технике
+struct Appliances
 {
     int id;
-    string model;
-    string receipt_date;
-    string departure_date;
+    AppliancesData Appliancesequipment;
     int cost;
-    AutoData Autoequipment;
+    string receipt_date;
+    string buyer;
+    string buyerEmail;
+    string departure_date;
 };
 
                                                                 /*
@@ -61,30 +65,28 @@ struct Auto
 bool choiceCreateFD = false;
 bool fileCreate;
 bool fileAdminCreate;
-bool availabilityAuto;
-vector<Auto> allAuto;
+bool availabilityAppliances;
+vector<Appliances> allAppliances;
 int varSort = 1;
+string userNameInProgramm;
 
                                                                 /*
                                                                 объявление всех функций
                                                                 */
                                                                 // проверка на наличие файла данных
-bool SearchDataFile();
+
 // проеверка файла админа
 bool CreateOrDeleteAdminFile();
 // запись данных в файла профиля
 string WorkProfileFD(Profile user, bool rePass, bool del);
 // сбор данных для пользователя
-Profile GetNewProfileData();
+Profile GetNewProfileData(bool ifUser);
 // Функции выбора в меню
 void GetChoiceMenuAdmin();
 void GetChoiceMenuManager();
 void GetChoiceMenuUser();
 // функции вывода меню
 void PrintMenuAdmin();
-void DisplayAutoDataFileData();
-void DisplayAutoDataRecords();
-void DisplayAutoDataProfile();
 void PrintMenuManager();
 void PrintMenuUser();
 // функции получения значения с клавиатуры
@@ -96,31 +98,40 @@ string getValueStr(string mess);
 bool SearchDataFile();
 // создание и затирание файла данных
 bool CreateOrDeleteFD(bool createOrDelete);
-// сбор сведений по авто
-Auto aggregationAutoData();
-// запись данных нового авто в файл данных (перезапись файла)
+// сбор сведений по бытовой технике
+Appliances aggregationAppliancesData();
+// запись данных нового бытовой технике в файл данных (перезапись файла)
 bool creatRecordInFD(bool atMemory);
 // принт таблицы файла данных
-void printTable();
-// поиск авто и принт таблицы
-void searchAndPrintTable(int change);
+void printTable(bool managerOrAdmin, vector<Appliances> data, bool search);
+// поиск бытовой технике и принт таблицы
+void searchAndPrintTable(int change, bool managerOrAdmin);
 // функция поиска в строке
 bool search(string query, string fundStr);
-// получение данных авто в память
-void getAllAutoFD();
-// удаление данных авто в памяти и перезапись в файл
-bool deleteWirkerInMemory();
-// изменение данных авто в памяти и перезапись в файл
-bool changeWirkerInMemory();
+// получение данных бытовой технике в память
+void getAllAppliancesFD();
+// удаление данных бытовой технике в памяти и перезапись в файл
+bool deleteAppliancesInMemory();
+// изменение данных бытовой технике в памяти и перезапись в файл
+bool changeAppliancesInMemory(bool userShop);
 //сортировка
 // компаратор по модели
-bool comparareModel(const Auto lhs, const Auto rhs);
+bool comparareName(const Appliances lhs, const Appliances rhs);
 // компаратор по цвету
-bool comparareColor(const Auto lhs, const Auto rhs);
-// функция сортировки
-void sortModel();
-void sortColor();
-
+bool comparareType(const Appliances lhs, const Appliances rhs);
+// компаратор по стоимости
+bool comparareCost(const Appliances lhs, const Appliances rhs);
+// компаратор по id
+bool comparareId(const Appliances lhs, const Appliances rhs);
+// функции сортировки
+// сортировка по производиителю
+void sortName();
+// сортировка по типу
+void sortType();
+// сортировка по id
+void sortId();
+// сортировка по стоимости
+void sortCost();
                                                                 /*
                                                                 функции вывода меню
                                                                 */
@@ -145,15 +156,15 @@ void PrintMenuAdmin()
     cout << "    Пожалуйста укажите пункт\n";
     cout << "\n";
     cout << "-------------  Работа с файлом данных товаров  -------------\n";
-    cout << "    1 - Создать базу данных автомобилей\n";
-    cout << "    2 - Удалить базу данных автомобилей\n";
+    cout << "    1 - Создать базу данных бытовой техникемобилей\n";
+    cout << "    2 - Удалить базу данных бытовой техникемобилей\n";
     cout << "\n";
     cout << "-------------  Работа с записями товаров       -------------\n";
-    cout << "    3 - Добавление записи\n";
+    cout << "    3 - Добавление записи о технике в базу\n";
     cout << "    4 - Редактирование записи\n";
     cout << "    5 - Удаление записи\n";
-    cout << "    6 - Просмотр всех записей в таблице\n";
-    cout << "    7 - Поиск записей\n";
+    cout << "    6 - Просмотр всей техники магазина\n";
+    cout << "    7 - Поиск техники в каталоге\n";
     cout << "\n";
     cout << "-------------  Работа с учетными записями      -------------\n";
     cout << "    8 - Добавление учетной записи\n";
@@ -170,11 +181,11 @@ void PrintMenuManager()
     cout << "          Меню менеджера\n";
     cout << "\n";
     cout << "Пожалуйста укажите пункт\n";
-    cout << "1 - Добавление записи\n";
+    cout << "1 - Добавление записи о технике в базу\n";
     cout << "2 - Редактирование записи\n";
     cout << "3 - Удаление записи\n";
-    cout << "4 - Просмотр всех записей в таблице\n";
-    cout << "5 - Поиск записей\n";
+    cout << "4 - Просмотр всей техники магазина\n";
+    cout << "5 - Поиск техники в каталоге\n";
     cout << "6 - Выход\n";
     cout << "Ваш выбор: ";
 }
@@ -184,9 +195,10 @@ void PrintMenuUser()
     cout << "          Меню пользователя\n";
     cout << "\n";
     cout << "Пожалуйста укажите пункт\n";
-    cout << "1 - Просмотр всех записей в таблице\n";
-    cout << "2 - Поиск записей\n";
-    cout << "3 - Выход\n";
+    cout << "1 - Просмотр всей техники магазина\n";
+    cout << "2 - Поиск техники в каталоге\n";
+    cout << "3 - Оформление покупки\n";
+    cout << "4 - Выход\n";
     cout << "Ваш выбор: ";
 }
 
@@ -331,30 +343,43 @@ string getValueStr(string mess)
 
 // сортировка
 // компараторы
-bool comparareModel(const Auto lhs, const Auto rhs) {
+bool comparareName(const Appliances lhs, const Appliances rhs) {
     if (varSort == 1)
     {
-        return lhs.model > rhs.model;
+        return lhs.Appliancesequipment.name > rhs.Appliancesequipment.name;
     }
     else
     {
-        return lhs.model < rhs.model;
+        return lhs.Appliancesequipment.name < rhs.Appliancesequipment.name;
     }
 
 }
-bool comparareColor(const Auto lhs, const Auto rhs) {
+bool comparareType(const Appliances lhs, const Appliances rhs) {
     if (varSort == 1)
     {
-        return lhs.Autoequipment.color > rhs.Autoequipment.color;
+        return lhs.Appliancesequipment.type > rhs.Appliancesequipment.type;
     }
     else
     {
-        return lhs.Autoequipment.color < rhs.Autoequipment.color;
+        return lhs.Appliancesequipment.type < rhs.Appliancesequipment.type;
     }
 }
+bool comparareCost(const Appliances lhs, const Appliances rhs) {
+    if (varSort == 1)
+    {
+        return lhs.cost > rhs.cost;
+    }
+    else
+    {
+        return lhs.cost < rhs.cost;
+    }
+}
+bool comparareId(const Appliances lhs, const Appliances rhs) {
+    return lhs.id < rhs.id;
+}
 // сортировка по модели
-void sortModel() {
-    sort( allAuto.begin(),  allAuto.end(), comparareModel);
+void sortName() {
+    sort( allAppliances.begin(),  allAppliances.end(), comparareName);
     if (varSort == 1)
     {
         varSort = 2;
@@ -365,8 +390,8 @@ void sortModel() {
     }
 }
 // сортировка по цвету
-void sortColor() {
-    sort( allAuto.begin(),  allAuto.end(), comparareColor);
+void sortType() {
+    sort( allAppliances.begin(),  allAppliances.end(), comparareType);
     if (varSort == 1)
     {
         varSort = 2;
@@ -375,6 +400,22 @@ void sortColor() {
     {
         varSort = 1;
     }
+}
+// сортировка по стоимости
+void sortCost() {
+    sort( allAppliances.begin(),  allAppliances.end(), comparareCost);
+    if (varSort == 1)
+    {
+        varSort = 2;
+    }
+    else
+    {
+        varSort = 1;
+    }
+}
+// сортировка по id для упорядоченной записи в файл, а так же для автоматической нумерации id
+void sortId() {
+    sort( allAppliances.begin(),  allAppliances.end(), comparareId);
 }
 
 // делитель строки
@@ -388,24 +429,26 @@ vector<string> split(const string& s, char delim) {
     return result;
 }
 
-// запись данных нового авто в файл данных (перезапись файла)
+// запись данных нового бытовой технике в файл данных (перезапись файла)
 bool creatRecordInFD(bool atMemory)
 {
     if (atMemory)
     {
         vector<string> allString;
-
-        for (Auto wk :  allAuto)
+        sortId();
+        for (Appliances wk :  allAppliances)
         {
             string outStrInterim = "";
             outStrInterim = outStrInterim + "#" + to_string(wk.id)
-                + "#" + wk.model
-                + "#" + wk.receipt_date
-                + "#" + wk.departure_date
+                + "#" + wk.Appliancesequipment.type
+                + "#" + wk.Appliancesequipment.name
+                + "#" + wk.Appliancesequipment.model
+                + "#" + wk.Appliancesequipment.color
                 + "#" + to_string(wk.cost)
-                + "#" + wk.Autoequipment.body
-                + "#" + wk.Autoequipment.color
-                + "#" + wk.Autoequipment.equipment;
+                + "#" + wk.receipt_date
+                + "#" + wk.buyer
+                + "#" + wk.buyerEmail
+                + "#" + wk.departure_date;
             allString.push_back(outStrInterim);
         }
         std::ofstream out("dataFile.txt", std::ios::trunc);
@@ -421,16 +464,18 @@ bool creatRecordInFD(bool atMemory)
     }
     else
     {
-        Auto newAuto = aggregationAutoData();
+        Appliances newAppliances = aggregationAppliancesData();
         string outStr = "";
-        outStr = outStr + "#" + to_string(newAuto.id)
-            + "#" + newAuto.model
-            + "#" + newAuto.receipt_date
-            + "#" + newAuto.departure_date
-            + "#" + to_string(newAuto.cost)
-            + "#" + newAuto.Autoequipment.body
-            + "#" + newAuto.Autoequipment.color
-            + "#" + newAuto.Autoequipment.equipment;
+        outStr = outStr + "#" + to_string(newAppliances.id)
+            + "#" + newAppliances.Appliancesequipment.type
+            + "#" + newAppliances.Appliancesequipment.name
+            + "#" + newAppliances.Appliancesequipment.model
+            + "#" + newAppliances.Appliancesequipment.color
+            + "#" + to_string(newAppliances.cost)
+            + "#" + newAppliances.receipt_date
+            + "#" + newAppliances.buyer
+            + "#" + newAppliances.buyerEmail
+            + "#" + newAppliances.departure_date;
         std::ofstream out("dataFile.txt", std::ios::app);
         if (out.is_open())
         {
@@ -443,41 +488,86 @@ bool creatRecordInFD(bool atMemory)
 }
 
 // принт таблицы файла данных
-void printTable()
+void printTable(bool managerOrAdmin, vector<Appliances> data, bool search)
 {
-    if ( allAuto.size() > 0)
+    if (data.size() > 0)
     {
-        Table AutosAll;
-        AutosAll.add_row(Row_t{ "№ в базе", "Модель", "Дата поступления", "Дата продажи", "Стоимость",
-                        "Кузов", "Цвет", "Комплектация" });
-        for (size_t i = 0; i < allAuto.size(); i++)
+        Table AppliancessAll;
+        if (managerOrAdmin) {
+            AppliancessAll.add_row(Row_t{ "№ в базе", "Тип техники", "Производитель", "Модель", "Цвет корпуса",
+                "Стоимость", "Дата поступления", "Имя покупателя", "Имейл покупателя", "Дата продажи" });
+        }
+        else
         {
-            AutosAll.add_row(Row_t{
-                to_string(allAuto[i].id), 
-                allAuto[i].model, 
-                allAuto[i].receipt_date,
-                allAuto[i].departure_date,
-                to_string(allAuto[i].cost), 
-                allAuto[i].Autoequipment.body, 
-                allAuto[i].Autoequipment.color,
-                allAuto[i].Autoequipment.equipment 
-                });
+            AppliancessAll.add_row(Row_t{ "№ в базе", "Тип техники", "Производитель", "Модель", "Цвет корпуса", "Стоимость" });
         }
-        AutosAll.add_row(Row_t{ "Итого автомобилей: ", to_string( allAuto.size()), "", "", "", "", "" });
-        AutosAll.column(0).format().font_align(FontAlign::center);
-        AutosAll.column(1).format().font_align(FontAlign::center);
-        AutosAll.column(2).format().font_align(FontAlign::center);
-        AutosAll.column(3).format().font_align(FontAlign::center);
-        AutosAll.column(4).format().font_align(FontAlign::center);
-        AutosAll.column(5).format().font_align(FontAlign::center);
-        AutosAll.column(6).format().font_align(FontAlign::center);
-        AutosAll.column(7).format().font_align(FontAlign::center);
-        int a = allAuto.size() + 1;
-        for (size_t i = 0; i < 8; ++i) {
-            AutosAll[0][i].format().font_color(Color::yellow).font_style({ FontStyle::bold });
-            AutosAll[a][i].format().font_color(Color::green).font_style({ FontStyle::bold });
+        for (size_t i = 0; i < data.size(); i++)
+        {
+            if (managerOrAdmin) {
+                AppliancessAll.add_row(Row_t{
+                    to_string(data[i].id),
+                    data[i].Appliancesequipment.type,
+                    data[i].Appliancesequipment.name,
+                    data[i].Appliancesequipment.model,
+                    data[i].Appliancesequipment.color,
+                    to_string(data[i].cost),
+                    data[i].receipt_date,
+                    data[i].buyer,
+                    data[i].buyerEmail,
+                    data[i].departure_date
+                    });
+            }
+            else
+            {
+                AppliancessAll.add_row(Row_t{
+                    to_string(data[i].id),
+                    data[i].Appliancesequipment.type,
+                    data[i].Appliancesequipment.name,
+                    data[i].Appliancesequipment.model,
+                    data[i].Appliancesequipment.color,
+                    to_string(data[i].cost)
+                    });
+            }
+
+
         }
-        std::cout << AutosAll << "\n\n";
+        if (search)
+        {
+            AppliancessAll.add_row(Row_t{ "Найдено бытовой техникемобилей: ", to_string(data.size()), "", "", "", "", "" });
+        }
+        else 
+        {
+            AppliancessAll.add_row(Row_t{ "Итого бытовой техники: ", to_string(data.size()), "", "", "", "", "" });
+        }
+
+        AppliancessAll.column(0).format().font_align(FontAlign::center);
+        AppliancessAll.column(1).format().font_align(FontAlign::center);
+        AppliancessAll.column(2).format().font_align(FontAlign::center);
+        AppliancessAll.column(3).format().font_align(FontAlign::center);
+        AppliancessAll.column(4).format().font_align(FontAlign::center);
+        AppliancessAll.column(5).format().font_align(FontAlign::center);
+        if (managerOrAdmin) {
+            AppliancessAll.column(6).format().font_align(FontAlign::center);
+            AppliancessAll.column(7).format().font_align(FontAlign::center);
+            AppliancessAll.column(8).format().font_align(FontAlign::center);
+            AppliancessAll.column(9).format().font_align(FontAlign::center);
+        }
+        int a = data.size() + 1;
+        if (managerOrAdmin) {
+            for (size_t i = 0; i < 10; ++i) {
+                AppliancessAll[0][i].format().font_color(Color::yellow).font_style({ FontStyle::bold });
+                AppliancessAll[a][i].format().font_color(Color::green).font_style({ FontStyle::bold });
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < 6; ++i) {
+                AppliancessAll[0][i].format().font_color(Color::yellow).font_style({ FontStyle::bold });
+                AppliancessAll[a][i].format().font_color(Color::green).font_style({ FontStyle::bold });
+            }
+        }
+
+        std::cout << AppliancessAll << "\n\n";
     }
     else
     {
@@ -502,69 +592,79 @@ bool search(string query, string fundStr) {
         return false;
 }
 
-// поиск авто и принт таблицы
-void searchAndPrintTable(int change)
+// поиск бытовой технике и принт таблицы
+void searchAndPrintTable(int change, bool managerOrAdmin)
 {
-    if ( allAuto.size() > 0)
+    if ( allAppliances.size() > 0)
     {
         bool ok = false;
         string query;
-        vector<Auto> searchAutos;
-        int continueAnsw;
+        vector<Appliances> searchAppliancess;
+        //int continueAnsw;
         switch (change)
         {
         case 1:
-            query = getValueStr("Введите модель авто");
+            query = getValueStr("Введите тип бытовой технике");
             break;
         case 2:
-            query = getValueStr("Введите цвет авто");
+            query = getValueStr("Введите производителя бытовой технике");
             break;
         }
-        for (size_t i = 0; i <  allAuto.size(); i++)
+        for (size_t i = 0; i <  allAppliances.size(); i++)
         {
-            if (change == 1 && search(query,  allAuto[i].model))
+            if (change == 1 && search(query,  allAppliances[i].Appliancesequipment.type))
             {
-                searchAutos.push_back( allAuto[i]);
+                searchAppliancess.push_back( allAppliances[i]);
             }
-            if (change == 2 && search(query,  allAuto[i].Autoequipment.color))
+            if (change == 2 && search(query,  allAppliances[i].Appliancesequipment.name))
             {
-                searchAutos.push_back( allAuto[i]);
+                searchAppliancess.push_back( allAppliances[i]);
             }
         }
-        if (searchAutos.size() > 0)
+        if (searchAppliancess.size() > 0)
         {
-            Table Autos;
-            Autos.add_row(Row_t{ "№ в базе", "Модель", "Дата поступления", "Дата продажи", "Стоимость",
-                                    "Кузов", "Цвет", "Комплектация" });
-            for (size_t i = 0; i < searchAutos.size(); i++)
+            if (managerOrAdmin)
             {
-                Autos.add_row(Row_t{ 
-                    to_string(searchAutos[i].id), 
-                    searchAutos[i].model,
-                    searchAutos[i].receipt_date,
-                    searchAutos[i].departure_date,
-                    to_string(searchAutos[i].cost), 
-                    searchAutos[i].Autoequipment.body, 
-                    searchAutos[i].Autoequipment.color,
-                    searchAutos[i].Autoequipment.equipment 
+                printTable(true, searchAppliancess, true);
+            }
+            else 
+            {
+                printTable(false, searchAppliancess, true);
+            }
+            /*
+            Table Appliancess;
+            Appliancess.add_row(Row_t{ "№ в базе", "Модель", "Дата поступления", "Дата продажи", "Стоимость",
+                                    "Кузов", "Цвет", "Комплектация" });
+            for (size_t i = 0; i < searchAppliancess.size(); i++)
+            {
+                Appliancess.add_row(Row_t{ 
+                    to_string(searchAppliancess[i].id), 
+                    searchAppliancess[i].model,
+                    searchAppliancess[i].receipt_date,
+                    searchAppliancess[i].departure_date,
+                    to_string(searchAppliancess[i].cost), 
+                    searchAppliancess[i].Appliancesequipment.body, 
+                    searchAppliancess[i].Appliancesequipment.color,
+                    searchAppliancess[i].Appliancesequipment.equipment 
                     });
             }
-            Autos.add_row(Row_t{ "Найдено автомобилей: ", to_string(searchAutos.size()), "", "", "", "", "" });
-            Autos.column(0).format().font_align(FontAlign::center);
-            Autos.column(1).format().font_align(FontAlign::center);
-            Autos.column(2).format().font_align(FontAlign::center);
-            Autos.column(3).format().font_align(FontAlign::center);
-            Autos.column(4).format().font_align(FontAlign::center);
-            Autos.column(5).format().font_align(FontAlign::center);
-            Autos.column(6).format().font_align(FontAlign::center);
-            Autos.column(7).format().font_align(FontAlign::center);
-            int a = searchAutos.size() + 1;
+            Appliancess.add_row(Row_t{ "Найдено бытовой техникемобилей: ", to_string(searchAppliancess.size()), "", "", "", "", "" });
+            Appliancess.column(0).format().font_align(FontAlign::center);
+            Appliancess.column(1).format().font_align(FontAlign::center);
+            Appliancess.column(2).format().font_align(FontAlign::center);
+            Appliancess.column(3).format().font_align(FontAlign::center);
+            Appliancess.column(4).format().font_align(FontAlign::center);
+            Appliancess.column(5).format().font_align(FontAlign::center);
+            Appliancess.column(6).format().font_align(FontAlign::center);
+            Appliancess.column(7).format().font_align(FontAlign::center);
+            int a = searchAppliancess.size() + 1;
             for (size_t i = 0; i < 8; ++i) {
-                Autos[0][i].format().font_color(Color::yellow).font_style({ FontStyle::bold });
-                Autos[a][i].format().font_color(Color::green).font_style({ FontStyle::bold });
+                Appliancess[0][i].format().font_color(Color::yellow).font_style({ FontStyle::bold });
+                Appliancess[a][i].format().font_color(Color::green).font_style({ FontStyle::bold });
             }
-            std::cout << Autos << "\n\n";
-            searchAutos.clear();
+            std::cout << Appliancess << "\n\n";
+            searchAppliancess.clear();
+            */
         }
         else
         {
@@ -581,92 +681,112 @@ void searchAndPrintTable(int change)
     }
 }
 
-// получение данных авто в память
-void getAllAutoFD()
+// получение данных бытовой технике в память
+void getAllAppliancesFD()
 {
-    int amountOfAuto = 0;
+    int amountOfAppliances = 0;
     ifstream fin("dataFile.txt", ios_base::in);
     string line;
     vector<string> strs;
     if (!fin.is_open())
     {
         cout << "not" << endl;
-        availabilityAuto = false;
+        availabilityAppliances = false;
     }
     else
     {
-         allAuto.clear();
+         allAppliances.clear();
         while (getline(fin, line))
         {
-            amountOfAuto++;
+            amountOfAppliances++;
             strs.push_back(line);
         }
         for (string u : strs)
         {
-            vector<string> AutoVect = split(u, '#');
-            Auto interimAuto;
-            for (size_t i = 0; i < AutoVect.size(); i++)
+            vector<string> AppliancesVect = split(u, '#');
+            Appliances interimAppliances;
+            for (size_t i = 0; i < AppliancesVect.size(); i++)
             {
                 switch (i)
                 {
                 case 1:
-                    interimAuto.id = stoi(AutoVect[i]);
+                    interimAppliances.id = stoi(AppliancesVect[i]);
                     break;
                 case 2:
-                    interimAuto.model = AutoVect[i];
+                    interimAppliances.Appliancesequipment.type = AppliancesVect[i];
                     break;
                 case 3:
-                    interimAuto.receipt_date = AutoVect[i];
+                    interimAppliances.Appliancesequipment.name = AppliancesVect[i];
                     break;
                 case 4:
-                    interimAuto.departure_date = AutoVect[i];
+                    interimAppliances.Appliancesequipment.model = AppliancesVect[i];
                     break;
                 case 5:
-                    interimAuto.cost = stoi(AutoVect[i]);
+                    interimAppliances.Appliancesequipment.color = AppliancesVect[i];
                     break;
                 case 6:
-                    interimAuto.Autoequipment.body = AutoVect[i];
+                    interimAppliances.cost = stoi(AppliancesVect[i]);
                     break;
                 case 7:
-                    interimAuto.Autoequipment.color = AutoVect[i];
+                    interimAppliances.receipt_date = AppliancesVect[i];
                     break;
                 case 8:
-                    interimAuto.Autoequipment.equipment = AutoVect[i];
+                    interimAppliances.buyer = AppliancesVect[i];
+                    break;
+                case 9:
+                    interimAppliances.buyerEmail = AppliancesVect[i];
+                    break;
+                case 10:
+                    interimAppliances.departure_date = AppliancesVect[i];
                     break;
                 }
             }
-             allAuto.push_back(interimAuto);
-            if ( allAuto.size() > 0)
+             allAppliances.push_back(interimAppliances);
+            if ( allAppliances.size() > 0)
             {
-                availabilityAuto = true;
+                availabilityAppliances = true;
             }
             else
             {
-                availabilityAuto = false;
+                availabilityAppliances = false;
             }
         }
     }
 }
 
-// изменение данных авто в памяти и перезапись в файл
-bool changeWirkerInMemory()
+// изменение данных бытовой технике в памяти и перезапись в файл
+bool changeAppliancesInMemory(bool userShop)
 {
-    int searchAutoLN = getValueInt("Введите номер авто в базе");
-    int indexAuto = -1;
-    for (size_t i = 0; i <  allAuto.size(); i++)
+    int searchAppliancesLN = getValueInt("Введите номер бытовой технике в базе");
+    int indexAppliances = -1;
+    for (size_t i = 0; i <  allAppliances.size(); i++)
     {
-        if ( allAuto[i].id == searchAutoLN)
+        if ( allAppliances[i].id == searchAppliancesLN)
         {
-            indexAuto = i;
+            indexAppliances = i;
         }
 
     }
-    if (indexAuto < 0)
+    if (indexAppliances < 0)
     {
         return false;
     }
-    Auto newAuto = aggregationAutoData();
-    allAuto[indexAuto] = newAuto;
+    if (userShop)
+    {
+        allAppliances[indexAppliances].buyer = userNameInProgramm;
+        allAppliances[indexAppliances].buyerEmail = getValueStr("Укажите свой имейл");
+        const time_t tm = time(NULL);
+        char buf[64];
+        strftime(buf, 64, "%d.%m.%Y", localtime(&tm));
+        string todayDate = string(buf);
+        allAppliances[indexAppliances].departure_date = todayDate;
+    }
+    else
+    {
+        Appliances newAppliances = aggregationAppliancesData();
+        allAppliances[indexAppliances] = newAppliances;
+    }
+
     if (creatRecordInFD(true))
     {
         return true;
@@ -677,25 +797,25 @@ bool changeWirkerInMemory()
     }
 }
 
-// удаление данных авто в памяти и перезапись в файл
-bool deleteWirkerInMemory()
+// удаление данных бытовой технике в памяти и перезапись в файл
+bool deleteAppliancesInMemory()
 {
-    int searchAutoLN = getValueInt("Введите номер авто в базе");
-    int indexAuto = -1;
-    auto iter =  allAuto.cbegin();
-    for (size_t i = 0; i <  allAuto.size(); i++)
+    int searchAppliancesLN = getValueInt("Введите номер бытовой технике в базе");
+    int indexAppliances = -1;
+    auto iter =  allAppliances.cbegin();
+    for (size_t i = 0; i <  allAppliances.size(); i++)
     {
-        if ( allAuto[i].id == searchAutoLN)
+        if ( allAppliances[i].id == searchAppliancesLN)
         {
-            indexAuto = i;
+            indexAppliances = i;
         }
 
     }
-    if (indexAuto < 0)
+    if (indexAppliances < 0)
     {
         return false;
     }
-     allAuto.erase(iter + indexAuto);
+     allAppliances.erase(iter + indexAppliances);
     if (creatRecordInFD(true))
     {
         return true;
@@ -706,18 +826,24 @@ bool deleteWirkerInMemory()
     }
 }
 
-// сбор сведений по авто
-Auto aggregationAutoData() {
-    Auto newAuto;
-    newAuto.id = allAuto[allAuto.size() - 1].id + 1;
-    newAuto.model = getValueStr("Укажите модель авто");
-    newAuto.receipt_date = getValueStr("Укажите дату поступления");
-    newAuto.departure_date = getValueStr("Укажите дату продажи (при необходимости)");
-    newAuto.cost = getValueInt("Укажите стоимость авто");
-    newAuto.Autoequipment.body = getValueStr("Укажите тип кузова");
-    newAuto.Autoequipment.color = getValueStr("Укажите цвет авто");
-    newAuto.Autoequipment.equipment = getValueStr("Укажите комплектацию");
-    return newAuto;
+// сбор сведений по бытовой технике
+Appliances aggregationAppliancesData() {
+    Appliances newAppliances;
+    sortId();
+    if (allAppliances.size() == 0) {
+        newAppliances.id = 1;
+    }
+    else 
+    {
+        newAppliances.id = allAppliances[allAppliances.size() - 1].id + 1;
+    }
+    newAppliances.Appliancesequipment.type = getValueStr("Укажите тип бытовой технике");
+    newAppliances.Appliancesequipment.name = getValueStr("Укажите производителя бытовой технике");
+    newAppliances.Appliancesequipment.model = getValueStr("Укажите модель бытовой технике");
+    newAppliances.Appliancesequipment.color = getValueStr("Укажите цвет бытовой технике");
+    newAppliances.cost = getValueInt("Укажите стоимость бытовой технике");
+    newAppliances.receipt_date = getValueStr("Укажите дату поступления");
+    return newAppliances;
 }
 
 // проверка на наличие файла данных
@@ -731,9 +857,9 @@ bool SearchDataFile()
     else
     {
         fin.close();
-        if (!availabilityAuto)
+        if (!availabilityAppliances)
         {
-            getAllAutoFD();
+            getAllAppliancesFD();
         }
         return true;
     }
@@ -756,7 +882,7 @@ bool CreateOrDeleteFD(bool createOrDelete)
         }
         else
         {
-             allAuto.clear();
+             allAppliances.clear();
             return true;
         }
     }
@@ -786,14 +912,12 @@ void GetChoiceMenuAdmin()
     system("cls");
     if (!fileCreate)
     {
-        cout << "Базы автомобилей не существует" << endl;
+        cout << "Базы бытовой техники не существует" << endl;
     }
     bool file = SearchDataFile();
     bool ok = false;
-    int continueAnsw;
     if (!SearchDataFile() && !choiceCreateFD)
     {
-        cout << "Базы автомобилей не существует" << endl;
         bool ok = false;
         while (ok == false)
         {
@@ -804,7 +928,7 @@ void GetChoiceMenuAdmin()
                 {
                     if (CreateOrDeleteFD(true))
                     {
-                        cout << "Файл данных успешно создан" << endl;
+                        cout << "База бытовой техники успешно создана" << endl;
                         fileCreate = true;
                         system("pause");
                         GetChoiceMenuAdmin();
@@ -820,7 +944,7 @@ void GetChoiceMenuAdmin()
                 }
                 if (continueAnsw == 2)
                 {
-                    cout << "Файл не будет создан." << endl;
+                    cout << "База бытовой техники не будет создана." << endl;
                     choiceCreateFD = true;
                     fileCreate = false;
                     system("pause");
@@ -846,7 +970,7 @@ void GetChoiceMenuAdmin()
         ifstream fin;
         int choice = getValueInt("Ваш выбор:");
         if ((choice == 3 && !fileCreate) || (choice == 4 && !fileCreate) || (choice == 5 && !fileCreate) || (choice == 6 && !fileCreate) || (choice == 7 && !fileCreate)) {
-            cout << "Базы автомобилей не существует" << endl;
+            cout << "Базы бытовой техники не существует" << endl;
             system("pause");
             GetChoiceMenuAdmin();
         }
@@ -856,7 +980,7 @@ void GetChoiceMenuAdmin()
             {
             case 1:
                 system("cls");
-                cout << "Создать базу автомобилей?" << endl;
+                cout << "Создать базу бытовой техники" << endl;
                 if (fileCreate)
                 {
                     cout << "База данных существует" << endl;
@@ -880,7 +1004,7 @@ void GetChoiceMenuAdmin()
                 break;
             case 2:
                 system("cls");
-                cout << "Удалить базу данных автомобилей" << endl;
+                cout << "Удалить базу данных бытовой техники" << endl;
                 if (CreateOrDeleteFD(false))
                 {
                     cout << "База данных успешно удален" << endl;
@@ -892,19 +1016,26 @@ void GetChoiceMenuAdmin()
                 else
                 {
                     cout << "Ошибка при удалении. Повторите попытку позже." << endl;
-                    fileCreate = true;
+                    if (SearchDataFile()) 
+                    {
+                        fileCreate = true;
+                    }
+                    else
+                    {
+                        fileCreate = false;
+                    }
                     system("pause");
                     GetChoiceMenuAdmin();
                 }
                 break;
             case 3:
                 system("cls");
-                cout << "Добавление записи" << endl;
+                cout << "Добавление записи о технике в базу" << endl;
                 if (creatRecordInFD(false))
                 {
-                    getAllAutoFD();
+                    getAllAppliancesFD();
                     cout << "Запись успешно добавлена" << endl;
-                    getAllAutoFD();
+                    getAllAppliancesFD();
                     system("pause");
                     GetChoiceMenuAdmin();
                 }
@@ -918,16 +1049,16 @@ void GetChoiceMenuAdmin()
             case 4:
                 system("cls");
                 cout << "Редактирование записи" << endl;
-                printTable();
-                if (changeWirkerInMemory())
+                printTable(true, allAppliances, false);
+                if (changeAppliancesInMemory(false))
                 {
-                    cout << "    Данные авто изменены" << endl;
+                    cout << "Данные бытовой техники изменены" << endl;
                     system("pause");
                     GetChoiceMenuAdmin();
                 }
                 else
                 {
-                    cout << "    Ошибка. Данные не изменены." << endl;
+                    cout << "Ошибка. Данные не изменены." << endl;
                     system("pause");
                     GetChoiceMenuAdmin();
                 }
@@ -935,10 +1066,10 @@ void GetChoiceMenuAdmin()
             case 5:
                 system("cls");
                 cout << "Удаление записи" << endl;
-                printTable();
-                if (deleteWirkerInMemory())
+                printTable(true, allAppliances, false);
+                if (deleteAppliancesInMemory())
                 {
-                    cout << "Авто удалено." << endl;
+                    cout << "Запись о бытовой техники удалена." << endl;
                     system("pause");
                     GetChoiceMenuAdmin();
                 }
@@ -951,29 +1082,35 @@ void GetChoiceMenuAdmin()
                 break;
             case 6:
                 system("cls");
-                cout << "Просмотр всех записей в таблице" << endl;
-                printTable();
-                if (availabilityAuto) {
+                cout << "Просмотр всей техники магазина" << endl;
+                printTable(true, allAppliances, false);
+                if (availabilityAppliances) {
                     while (ok == false)
                     {
-                        continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по модели\n2 - Сортировка по цвету\n3 - Назад\n");
-                        if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3)
+                        continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по производителю\n2 - Сортировка по типу\n3 - Сортировка по стоимости\n4 - Назад\n");
+                        if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
                         {
                             switch (continueAnsw)
                             {
                             case 1:
                                 system("cls");
-                                cout << "Сортировка по модели\n" << endl;
-                                sortModel();
-                                printTable();
+                                cout << "Сортировка по производителю\n" << endl;
+                                sortName();
+                                printTable(true, allAppliances, false);
                                 continue;
                             case 2:
                                 system("cls");
-                                cout << "Сортировка по цвету\n" << endl;
-                                sortColor();
-                                printTable();
+                                cout << "Сортировка по типу\n" << endl;
+                                sortType();
+                                printTable(true, allAppliances, false);
                                 continue;
                             case 3:
+                                system("cls");
+                                cout << "Сортировка по типу\n" << endl;
+                                sortCost();
+                                printTable(true, allAppliances, false);
+                                continue;
+                            case 4:
                                 GetChoiceMenuAdmin();
                                 break;
                             default:
@@ -995,11 +1132,10 @@ void GetChoiceMenuAdmin()
                 break;
             case 7:
                 system("cls");
-                cout << "  Поиск записей" << endl;
-                cout << "и вывод в таблицу" << endl;
+                cout << "  Поиск техники в каталоге" << endl;
                 while (ok == false)
                 {
-                    continueAnsw = getValueInt("\nВарианты поиска?\n1 - по модели\n2 - по цвету\n3 - Назад\n4 - Выход\n");
+                    continueAnsw = getValueInt("\nВарианты поиска?\n1 - по производителю\n2 - по типу\n3 - назад\n4 - выход\n");
                     if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
                     {
                         ok = true;
@@ -1018,7 +1154,7 @@ void GetChoiceMenuAdmin()
                     cout << "Выход!";
                     exit(0);
                 }
-                searchAndPrintTable(continueAnsw);
+                searchAndPrintTable(continueAnsw, true);
                 system("pause");
                 GetChoiceMenuAdmin();
                 break;
@@ -1178,399 +1314,12 @@ void GetChoiceMenuAdmin()
    
 }
 
-/*void GetChoiceAutoDataFileData()
-{
-    system("cls");
-    if (!fileCreate)
-    {
-        cout << "Базы автомобилей не существует" << endl;
-    }
-    DisplayAutoDataFileData();
-    int choice = getValueInt("Ваш выбор:");
-    switch (choice)
-    {
-    case 1:
-        system("cls");
-        cout << "Создать базу автомобилей?" << endl;
-        if (fileCreate)
-        {
-            cout << "База данных существует" << endl;
-            system("pause");
-            GetChoiceAutoDataFileData();
-        }
-        if (CreateOrDeleteFD(true))
-        {
-            cout << "База данных успешно создана" << endl;
-            fileCreate = true;
-            system("pause");
-            GetChoiceAutoDataFileData();
-        }
-        else
-        {
-            cout << "Ошибка при создании. Повторите попытку позже." << endl;
-            fileCreate = false;
-            system("pause");
-            GetChoiceAutoDataFileData();
-        }
-        break;
-    case 2:
-        system("cls");
-        cout << "Удалить базу данных автомобилей" << endl;
-        if (CreateOrDeleteFD(false))
-        {
-            cout << "База данных успешно удален" << endl;
-            choiceCreateFD = true;
-            fileCreate = false;
-            system("pause");
-            GetChoiceAutoDataFileData();
-        }
-        else
-        {
-            cout << "Ошибка при удалении. Повторите попытку позже." << endl;
-            fileCreate = true;
-            system("pause");
-            GetChoiceAutoDataFileData();
-        }
-        break;
-    case 3:
-        GetChoiceMenuAdmin();
-        break;
-    case 4:
-        cout << "Выход!";
-        exit(0);
-    default:
-        GetChoiceAutoDataFileData();
-        break;
-    }
-}*/
-
-/*void GetChoiceAutoDataRecords()
-{
-    system("cls");
-    DisplayAutoDataRecords();
-    int choice = getValueInt("Ваш выбор:");
-    bool ok = false;
-    int continueAnsw;
-    switch (choice)
-    {
-    case 1:
-        system("cls");
-        cout << "Добавление записи" << endl;
-        if (creatRecordInFD(false))
-        {
-            getAllAutoFD();
-            cout << "Запись успешно добавлена" << endl;
-            getAllAutoFD();
-            system("pause");
-            GetChoiceAutoDataRecords();
-        }
-        else
-        {
-            cout << "Запись успешно добавлена" << endl;
-            system("pause");
-            GetChoiceAutoDataRecords();
-        }
-        break;
-    case 2:
-        system("cls");
-        cout << "Редактирование записи" << endl;
-        printTable();
-        if (changeWirkerInMemory())
-        {
-            cout << "    Данные авто изменены" << endl;
-            system("pause");
-            GetChoiceAutoDataRecords();
-        }
-        else
-        {
-            cout << "    Ошибка. Данные не изменены." << endl;
-            system("pause");
-            GetChoiceAutoDataRecords();
-        }
-        break;
-    case 3:
-        system("cls");
-        cout << "Удаление записи" << endl;
-        printTable();
-        if (deleteWirkerInMemory())
-        {
-            cout << "Авто удалено." << endl;
-            system("pause");
-            GetChoiceAutoDataRecords();
-        }
-        else
-        {
-            cout << "Ошибка. Данные не изменены." << endl;
-            system("pause");
-            GetChoiceAutoDataRecords();
-        }
-        break;
-    case 4:
-        system("cls");
-        cout << "Просмотр всех записей в таблице" << endl;
-        printTable();
-        if (availabilityAuto) {
-            while (ok == false)
-            {
-                continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по модели\n2 - Сортировка по цвету\n3 - Назад\n");
-                if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 )
-                {
-                    switch (continueAnsw)
-                    {
-                    case 1:
-                        system("cls");
-                        cout << "Сортировка по модели\n" << endl;
-                        sortModel();
-                        printTable();
-                        continue;
-                    case 2:
-                        system("cls");
-                        cout << "Сортировка по цвету\n" << endl;
-                        sortColor();
-                        printTable();
-                        continue;
-                    case 3:
-                        GetChoiceAutoDataRecords();
-                        break;
-                    default:
-                        GetChoiceAutoDataRecords();
-                        break;
-                    }
-                }
-                else
-                {
-                    cout << "Введите одно из указанных чисел.\n" << endl;
-                }
-            }
-        }
-        else
-        {
-            system("pause");
-            GetChoiceAutoDataRecords();
-        }
-        break;
-    case 5:
-        system("cls");
-        cout << "  Поиск записей" << endl;
-        cout << "и вывод в таблицу" << endl;
-        while (ok == false)
-        {
-            continueAnsw = getValueInt("\nВарианты поиска?\n1 - по модели\n2 - по цвету\n3 - Назад\n4 - Выход\n");
-            if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
-            {
-                ok = true;
-            }
-            else
-            {
-                cout << "Введите одно из указанных чисел.\n";
-            }
-        }
-        if (continueAnsw == 3)
-        {
-            GetChoiceMenuAdmin();
-        }
-        if (continueAnsw == 4)
-        {
-            cout << "Выход!";
-            exit(0);
-        }
-        searchAndPrintTable(continueAnsw);
-        system("pause");
-        GetChoiceAutoDataRecords();
-        break;
-    case 6:
-        GetChoiceMenuAdmin();
-        break;
-    case 7:
-        cout << "Выход!";
-        exit(0);
-    default:
-        GetChoiceAutoDataRecords();
-        break;
-    }
-}
-*/
-
-/*void GetChoiceAutoDataProfile()
-{
-    system("cls");
-    if (!fileCreate)
-    {
-        cout << "Базы автомобилей не существует" << endl;
-    }
-    DisplayAutoDataProfile();
-    int choice = getValueInt("Ваш выбор:");
-    Profile newUser;
-    Profile interimProfile;
-    Profile fileUser;
-    string out;
-    string oldUserName;
-    int continueAnsw;
-    bool ok = false;
-    ifstream fin;
-    switch (choice)   
-    {
-    case 1:
-        system("cls");
-        cout << "Добавление новой учетной записи" << endl;
-        newUser = GetNewProfileData();
-        fin.open(newUser.name, ios_base::in | std::ios::binary);
-        if (!fin.is_open()) // если файл не открыт
-        {
-            while (ok == false)
-            {
-                continueAnsw = getValueInt("Продолжаем?\n1 - Да\n2 - нет\n");
-                if (continueAnsw == 1 || continueAnsw == 2)
-                {
-                    ok = true;
-                }
-                else
-                {
-                    cout << "Введите одно из указанных чисел.\n" << endl;
-                }
-            }
-            if (continueAnsw == 1)
-            {
-                out = WorkProfileFD(newUser, false, false);
-                cout << out;
-                system("pause");
-                GetChoiceAutoDataProfile();
-            }
-            if (continueAnsw == 2)
-            {
-                cout << "Операция прервана\n" << endl;
-                GetChoiceAutoDataProfile();
-            }
-            ok = false;
-            break;
-        }
-        else
-        {
-            fin.close();
-            cout << "Пользователь с таким логином существует.\n";
-            system("pause");
-            GetChoiceAutoDataProfile();
-            ok = false;
-            break;
-        }
-        
-    case 2:
-        system("cls");
-        cout << "Редактирование учетной записи" << endl;
-        cout << "\n";
-        newUser.name = getValueStr("    Введите имя учетной записи, которую желаете изменить");
-        fin.open(newUser.name + ".txt", ios_base::in);
-        if (!fin.is_open()) // если файл не открыт
-        {
-            cout << "    Пользователь с таким логином не найден.\n";
-            system("pause");
-            GetChoiceAutoDataProfile();
-            ok = false;
-            break;
-        }
-        else
-        {
-            fin.close();
-            ok = false;
-            while (ok == false)
-            {
-                continueAnsw = getValueInt("    Продолжаем?\n1 - Да\n2 - нет\n");
-                if (continueAnsw == 1 || continueAnsw == 2)
-                {
-                    ok = true;
-                }
-                else
-                {
-                    cout << "    Введите одно из указанных чисел.\n";
-                }
-            }
-            if (continueAnsw == 1)
-            {
-                cout << "    Введите новые данные учетной записи\n";
-                interimProfile = GetNewProfileData();
-                out = WorkProfileFD(interimProfile, true, false);
-                cout << "    Учетная запись изменена\n";
-                if (newUser.name != interimProfile.name)
-                {
-                    WorkProfileFD(newUser, false, true);
-                }
-                system("pause");
-                GetChoiceAutoDataProfile();
-            }
-            if (continueAnsw == 2)
-            {
-                cout << "    Операция прервана\n";
-                GetChoiceAutoDataProfile();
-            }
-            ok = false;
-            break;
-        }
-    case 3:
-        system("cls");
-        cout << "Удаление учетной записи" << endl;
-        ok = false;
-        while (ok == false)
-        {
-            system("pause");
-            oldUserName = getValueStr("    Введите логин удаляемого объекта");
-            string interimFN = oldUserName + ".txt";
-            ifstream finn(interimFN, ios_base::in);
-            if (!finn.is_open()) // если файл не открыт
-            {
-                cout << "    Пользователь с таким логином не найден!\n";
-            }
-            else
-            {
-                finn.close();
-                ok = true;
-            }
-        }
-        ok = false;
-        while (ok == false)
-        {
-            continueAnsw = getValueInt("\nПродолжаем?\n1 - Да\n2 - нет\n");
-            if (continueAnsw == 1 || continueAnsw == 2)
-            {
-                ok = true;
-            }
-            else
-            {
-                cout << "Введите одно из указанных чисел.\n";
-            }
-        }
-        if (continueAnsw == 1)
-        {
-            newUser.name = oldUserName;
-            out = WorkProfileFD(newUser, false, true);
-            cout << out;
-            system("pause");
-            GetChoiceAutoDataProfile();
-        }
-        if (continueAnsw == 2)
-        {
-            cout << "    Операция прервана\n";
-            GetChoiceAutoDataProfile();
-        }
-
-        break;
-    case 4:
-        GetChoiceMenuAdmin();
-        break;
-    case 5:
-        cout << "Выход!\n";
-        exit(0);
-    default:
-        GetChoiceAutoDataProfile();
-        break;
-    }
-}*/
-
 void GetChoiceMenuManager()
 {
     system("cls");
     if (!fileCreate)
     {
-        cout << "Базы автомобилей не существует" << endl;
+        cout << "Базы бытовой технике не существует" << endl;
         system("pause");
         cout << "Выход!\n";
         exit(0);
@@ -1583,12 +1332,12 @@ void GetChoiceMenuManager()
     {
     case 1:
         system("cls");
-        cout << "Добавление записи" << endl;
+        cout << "Добавление записи о технике в базу" << endl;
         if (creatRecordInFD(false))
         {
-            getAllAutoFD();
+            getAllAppliancesFD();
             cout << "Запись успешно добавлена" << endl;
-            getAllAutoFD();
+            getAllAppliancesFD();
             system("pause");
             GetChoiceMenuManager();
         }
@@ -1602,10 +1351,10 @@ void GetChoiceMenuManager()
     case 2:
         system("cls");
         cout << "Редактирование записи" << endl;
-        printTable();
-        if (changeWirkerInMemory())
+        printTable(true, allAppliances, false);
+        if (changeAppliancesInMemory(false))
         {
-            cout << "Данные авто изменены" << endl;
+            cout << "Данные бытовой технике изменены" << endl;
             system("pause");
             GetChoiceMenuManager();
         }
@@ -1619,10 +1368,10 @@ void GetChoiceMenuManager()
     case 3:
         system("cls");
         cout << "Удаление записи" << endl;
-        printTable();
-        if (deleteWirkerInMemory())
+        printTable(true, allAppliances, false);
+        if (deleteAppliancesInMemory())
         {
-            cout << "Авто удалено." << endl;
+            cout << "бытовой технике удалено." << endl;
             system("pause");
             GetChoiceMenuManager();
         }
@@ -1635,27 +1384,27 @@ void GetChoiceMenuManager()
         break;
     case 4:
         system("cls");
-        cout << "Просмотр всех записей в таблице" << endl;
-        printTable();
-        if (availabilityAuto) {
+        cout << "Просмотр всей техники магазина" << endl;
+        printTable(true, allAppliances, false);
+        if (availabilityAppliances) {
             while (ok == false)
             {
-                continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по модели\n2 - Сортировка по цвету\n3 - Назад\n");
+                continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по производителю\n2 - Сортировка по типу\n3 - Назад\n");
                 if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3)
                 {
                     switch (continueAnsw)
                     {
                     case 1:
                         system("cls");
-                        cout << "Сортировка по модели\n" << endl;
-                        sortModel();
-                        printTable();
+                        cout << "Сортировка по производителю\n" << endl;
+                        sortName();
+                        printTable(true, allAppliances, false);
                         continue;
                     case 2:
                         system("cls");
-                        cout << "Сортировка по цвету\n" << endl;
-                        sortColor();
-                        printTable();
+                        cout << "Сортировка по типу\n" << endl;
+                        sortType();
+                        printTable(true, allAppliances, false);
                         continue;
                     case 3:
                         GetChoiceMenuManager();
@@ -1679,11 +1428,10 @@ void GetChoiceMenuManager()
         break;
     case 5:
         system("cls");
-        cout << "  Поиск записей" << endl;
-        cout << "и вывод в таблицу" << endl;
+        cout << "  Поиск техники в каталоге" << endl;
         while (ok == false)
         {
-            continueAnsw = getValueInt("\nВарианты поиска?\n1 - по модели\n2 - по цвету\n3 - Назад\n4 - Выход\n");
+            continueAnsw = getValueInt("\nВарианты поиска?\n1 - по производителю\n2 - по типу\n3 - Назад\n4 - Выход\n");
             if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
             {
                 ok = true;
@@ -1702,7 +1450,7 @@ void GetChoiceMenuManager()
             cout << "Выход!";
             exit(0);
         }
-        searchAndPrintTable(continueAnsw);
+        searchAndPrintTable(continueAnsw, true);
         system("pause");
         GetChoiceMenuManager();
         break;
@@ -1718,9 +1466,9 @@ void GetChoiceMenuManager()
 void GetChoiceMenuUser()
 {
     system("cls");
-    if (!fileCreate || !availabilityAuto)
+    if (!fileCreate || !availabilityAppliances)
     {
-        cout << "     Базы автомобилей не существует" << endl;
+        cout << "     Базы бытовой техники не существует" << endl;
         cout << "       или записей не обнаружено" << endl;
         system("pause");
         cout << "Выход!\n";
@@ -1734,27 +1482,27 @@ void GetChoiceMenuUser()
     {
     case 1:
         system("cls");
-        cout << "Просмотр всех записей в таблице" << endl;
-        printTable();
-        if (availabilityAuto) {
+        cout << "Просмотр всей техники магазина" << endl;
+        printTable(false, allAppliances, false);
+        if (availabilityAppliances) {
             while (ok == false)
             {
-                continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по модели\n2 - Сортировка по цвету\n3 - Назад\n");
+                continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по производителю\n2 - Сортировка по типу\n3 - Назад\n");
                 if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3)
                 {
                     switch (continueAnsw)
                     {
                     case 1:
                         system("cls");
-                        cout << "Сортировка по модели\n" << endl;
-                        sortModel();
-                        printTable();
+                        cout << "Сортировка по производителю\n" << endl;
+                        sortName();
+                        printTable(false, allAppliances, false);
                         continue;
                     case 2:
                         system("cls");
-                        cout << "Сортировка по цвету\n" << endl;
-                        sortColor();
-                        printTable();
+                        cout << "Сортировка по типу\n" << endl;
+                        sortType();
+                        printTable(false, allAppliances, false);
                         continue;
                     case 3:
                         GetChoiceMenuUser();
@@ -1778,8 +1526,7 @@ void GetChoiceMenuUser()
         break;
     case 2:
         system("cls");
-        cout << "  Поиск записей" << endl;
-        cout << "и вывод в таблицу" << endl;
+        cout << "  Поиск техники в каталоге" << endl;
         while (ok == false)
         {
             continueAnsw = getValueInt("\nВарианты поиска?\n1 - по модели\n2 - по цвету\n3 - Назад\n4 - Выход\n");
@@ -1801,11 +1548,28 @@ void GetChoiceMenuUser()
             cout << "Выход!";
             exit(0);
         }
-        searchAndPrintTable(continueAnsw);
+        searchAndPrintTable(continueAnsw, false);
         system("pause");
         GetChoiceMenuUser();
         break;
     case 3:
+        system("cls");
+        cout << "Оформление покупки" << endl;
+        printTable(false, allAppliances, false);
+        if (changeAppliancesInMemory(true))
+        {
+            cout << "Покупка успешна. Заказ оформлен на пользователя  " << userNameInProgramm << endl;
+            system("pause");
+            GetChoiceMenuUser();
+        }
+        else
+        {
+            cout << "Ошибка. Покупка не возможна. Обратитесь к  администратору." << endl;
+            system("pause");
+            GetChoiceMenuUser();
+        }
+        break;
+    case 4:
         cout << "Выход!";
         exit(0);
     default:
@@ -2006,7 +1770,7 @@ int main(int argc, char* argv[])
             }
             if (profile == 1) { GetChoiceMenuAdmin(); }
             if (profile == 2) { GetChoiceMenuManager(); }
-            if (profile == 3) { GetChoiceMenuUser(); }
+            if (profile == 3) { userNameInProgramm = fileLogin; GetChoiceMenuUser(); }
         }
         else if (continueAnsw == 4)
         {
