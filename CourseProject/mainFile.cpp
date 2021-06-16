@@ -78,9 +78,6 @@ string WorkProfileFD(Profile user, bool rePass, bool del);
 Profile GetNewProfileData();
 // Функции выбора в меню
 void GetChoiceMenuAdmin();
-//void GetChoiceAutoDataFileData();
-//void GetChoiceAutoDataRecords();
-//void GetChoiceAutoDataProfile();
 void GetChoiceMenuManager();
 void GetChoiceMenuUser();
 // функции вывода меню
@@ -167,49 +164,6 @@ void PrintMenuAdmin()
     cout << "\n";
     cout << "    Ваш выбор: ";
 }
-
-/*
-void DisplayAutoDataFileData()
-{
-    cout << "          Меню работы с файлами данных\n";
-    cout << "\n";
-    cout << "Пожалуйста укажите пункт\n";
-    cout << "1 - Создать базу данных автомобилей\n";
-    cout << "2 - Удалить базу данных автомобилей\n";
-    cout << "3 - Назад\n";
-    cout << "4 - Выход\n";
-    cout << "Ваш выбор: ";
-}*/
-/*
-void DisplayAutoDataRecords()
-{
-    cout << "          Меню работы с записями\n";
-    cout << "\n";
-    cout << "Пожалуйста укажите пункт\n";
-    cout << "1 - Добавление записи\n";
-    cout << "2 - Редактирование записи\n";
-    cout << "3 - Удаление записи\n";
-    cout << "4 - Просмотр всех записей в таблице\n";
-    cout << "5 - Поиск записей\n";
-    cout << "6 - Назад\n";
-    cout << "7 - Выход\n";
-    cout << "Ваш выбор: ";
-}
-*/
-/*
-void DisplayAutoDataProfile()
-{
-    cout << "          Меню работы с учетными записями\n";
-    cout << "\n";
-    cout << "Пожалуйста укажите пункт\n";
-    cout << "1 - Добавление учетной записи\n";
-    cout << "2 - Редактирование учетной записи\n";
-    cout << "3 - Удаление учетной записи\n";
-    cout << "4 - Назад\n";
-    cout << "5 - Выход\n";
-    cout << "Ваш выбор: ";
-}
-*/
 
 void PrintMenuManager()
 {
@@ -321,13 +275,19 @@ string WorkProfileFD(Profile user, bool rePass, bool del)
 }
 
 // сбор данных для пользователя
-Profile GetNewProfileData()
+Profile GetNewProfileData(bool ifUser)
 {
     bool ok = false;
     Profile fileUser;
     fileUser.name = getValueStr("    Введите имя объекта");
     fileUser.pass = getValueStr("    Введите пароль");
-    fileUser.level = getValueInt("    Введите уровень доступа:\n1 - Администратор\n2 - Менеджер\n3 - Пользователь\nВаш выбор: ");
+    if (!ifUser) {
+        fileUser.level = getValueInt("    Введите уровень доступа:\n1 - Администратор\n2 - Менеджер\n3 - Пользователь\nВаш выбор: ");
+    }
+    else
+    {
+        fileUser.level = 3;
+    }
     return fileUser;
 }
 
@@ -875,329 +835,277 @@ void GetChoiceMenuAdmin()
     }
     else
     {
-        if (!fileCreate)
-        {
+        PrintMenuAdmin();
+        Profile newUser;
+        Profile interimProfile;
+        Profile fileUser;
+        string out;
+        string oldUserName;
+        int continueAnsw;
+        bool ok = false;
+        ifstream fin;
+        int choice = getValueInt("Ваш выбор:");
+        if ((choice == 3 && !fileCreate) || (choice == 4 && !fileCreate) || (choice == 5 && !fileCreate) || (choice == 6 && !fileCreate) || (choice == 7 && !fileCreate)) {
             cout << "Базы автомобилей не существует" << endl;
-            PrintMenuAdmin();
-            Profile newUser;
-            Profile interimProfile;
-            Profile fileUser;
-            string out;
-            string oldUserName;
-            int continueAnsw;
-            bool ok = false;
-            ifstream fin;
-            int choice = getValueInt("Ваш выбор:");
-            if ((choice == 3 && !fileCreate) || (choice == 4 && !fileCreate) || (choice == 5 && !fileCreate) || (choice == 6 && !fileCreate) || (choice == 7 && !fileCreate)) {
-                cout << "Базы автомобилей не существует" << endl;
-                system("pause");
-                GetChoiceMenuAdmin();
-            }
-            else
+            system("pause");
+            GetChoiceMenuAdmin();
+        }
+        else
+        {
+            switch (choice)
             {
-                switch (choice)
+            case 1:
+                system("cls");
+                cout << "Создать базу автомобилей?" << endl;
+                if (fileCreate)
                 {
-                case 1:
-                    system("cls");
-                    cout << "Создать базу автомобилей?" << endl;
-                    if (fileCreate)
-                    {
-                        cout << "База данных существует" << endl;
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    if (CreateOrDeleteFD(true))
-                    {
-                        cout << "База данных успешно создана" << endl;
-                        fileCreate = true;
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    else
-                    {
-                        cout << "Ошибка при создании. Повторите попытку позже." << endl;
-                        fileCreate = false;
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    break;
-                case 2:
-                    system("cls");
-                    cout << "Удалить базу данных автомобилей" << endl;
-                    if (CreateOrDeleteFD(false))
-                    {
-                        cout << "База данных успешно удален" << endl;
-                        choiceCreateFD = true;
-                        fileCreate = false;
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    else
-                    {
-                        cout << "Ошибка при удалении. Повторите попытку позже." << endl;
-                        fileCreate = true;
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    break;
-                case 3:
-                    system("cls");
-                    cout << "Добавление записи" << endl;
-                    if (creatRecordInFD(false))
-                    {
-                        getAllAutoFD();
-                        cout << "Запись успешно добавлена" << endl;
-                        getAllAutoFD();
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    else
-                    {
-                        cout << "Запись успешно добавлена" << endl;
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    break;
-                case 4:
-                    system("cls");
-                    cout << "Редактирование записи" << endl;
-                    printTable();
-                    if (changeWirkerInMemory())
-                    {
-                        cout << "    Данные авто изменены" << endl;
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    else
-                    {
-                        cout << "    Ошибка. Данные не изменены." << endl;
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    break;
-                case 5:
-                    system("cls");
-                    cout << "Удаление записи" << endl;
-                    printTable();
-                    if (deleteWirkerInMemory())
-                    {
-                        cout << "Авто удалено." << endl;
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    else
-                    {
-                        cout << "Ошибка. Данные не изменены." << endl;
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    break;
-                case 6:
-                    system("cls");
-                    cout << "Просмотр всех записей в таблице" << endl;
-                    printTable();
-                    if (availabilityAuto) {
-                        while (ok == false)
-                        {
-                            continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по модели\n2 - Сортировка по цвету\n3 - Назад\n");
-                            if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3)
-                            {
-                                switch (continueAnsw)
-                                {
-                                case 1:
-                                    system("cls");
-                                    cout << "Сортировка по модели\n" << endl;
-                                    sortModel();
-                                    printTable();
-                                    continue;
-                                case 2:
-                                    system("cls");
-                                    cout << "Сортировка по цвету\n" << endl;
-                                    sortColor();
-                                    printTable();
-                                    continue;
-                                case 3:
-                                    GetChoiceMenuAdmin();
-                                    break;
-                                default:
-                                    GetChoiceMenuAdmin();
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                cout << "Введите одно из указанных чисел.\n" << endl;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                    }
-                    break;
-                case 7:
-                    system("cls");
-                    cout << "  Поиск записей" << endl;
-                    cout << "и вывод в таблицу" << endl;
-                    while (ok == false)
-                    {
-                        continueAnsw = getValueInt("\nВарианты поиска?\n1 - по модели\n2 - по цвету\n3 - Назад\n4 - Выход\n");
-                        if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
-                        {
-                            ok = true;
-                        }
-                        else
-                        {
-                            cout << "Введите одно из указанных чисел.\n";
-                        }
-                    }
-                    if (continueAnsw == 3)
-                    {
-                        GetChoiceMenuAdmin();
-                    }
-                    if (continueAnsw == 4)
-                    {
-                        cout << "Выход!";
-                        exit(0);
-                    }
-                    searchAndPrintTable(continueAnsw);
+                    cout << "База данных существует" << endl;
                     system("pause");
                     GetChoiceMenuAdmin();
-                    break;
-                case 8:
-                    system("cls");
-                    cout << "Добавление новой учетной записи" << endl;
-                    newUser = GetNewProfileData();
-                    fin.open(newUser.name, ios_base::in | std::ios::binary);
-                    if (!fin.is_open()) // если файл не открыт
-                    {
-                        while (ok == false)
-                        {
-                            continueAnsw = getValueInt("Продолжаем?\n1 - Да\n2 - нет\n");
-                            if (continueAnsw == 1 || continueAnsw == 2)
-                            {
-                                ok = true;
-                            }
-                            else
-                            {
-                                cout << "Введите одно из указанных чисел.\n" << endl;
-                            }
-                        }
-                        if (continueAnsw == 1)
-                        {
-                            out = WorkProfileFD(newUser, false, false);
-                            cout << out;
-                            system("pause");
-                            GetChoiceMenuAdmin();
-                        }
-                        if (continueAnsw == 2)
-                        {
-                            cout << "Операция прервана\n" << endl;
-                            GetChoiceMenuAdmin();
-                        }
-                        ok = false;
-                        break;
-                    }
-                    else
-                    {
-                        fin.close();
-                        cout << "Пользователь с таким логином существует.\n";
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                        ok = false;
-                        break;
-                    }
-
-                case 9:
-                    system("cls");
-                    cout << "Редактирование учетной записи" << endl;
-                    cout << "\n";
-                    newUser.name = getValueStr("    Введите имя учетной записи, которую желаете изменить");
-                    fin.open(newUser.name + ".txt", ios_base::in);
-                    if (!fin.is_open()) // если файл не открыт
-                    {
-                        cout << "    Пользователь с таким логином не найден.\n";
-                        system("pause");
-                        GetChoiceMenuAdmin();
-                        ok = false;
-                        break;
-                    }
-                    else
-                    {
-                        fin.close();
-                        ok = false;
-                        while (ok == false)
-                        {
-                            continueAnsw = getValueInt("    Продолжаем?\n1 - Да\n2 - нет\n");
-                            if (continueAnsw == 1 || continueAnsw == 2)
-                            {
-                                ok = true;
-                            }
-                            else
-                            {
-                                cout << "    Введите одно из указанных чисел.\n";
-                            }
-                        }
-                        if (continueAnsw == 1)
-                        {
-                            cout << "    Введите новые данные учетной записи\n";
-                            interimProfile = GetNewProfileData();
-                            out = WorkProfileFD(interimProfile, true, false);
-                            cout << "    Учетная запись изменена\n";
-                            if (newUser.name != interimProfile.name)
-                            {
-                                WorkProfileFD(newUser, false, true);
-                            }
-                            system("pause");
-                            GetChoiceMenuAdmin();
-                        }
-                        if (continueAnsw == 2)
-                        {
-                            cout << "    Операция прервана\n";
-                            GetChoiceMenuAdmin();
-                        }
-                        ok = false;
-                        break;
-                    }
-                case 10:
-                    system("cls");
-                    cout << "Удаление учетной записи" << endl;
-                    ok = false;
+                }
+                if (CreateOrDeleteFD(true))
+                {
+                    cout << "База данных успешно создана" << endl;
+                    fileCreate = true;
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                else
+                {
+                    cout << "Ошибка при создании. Повторите попытку позже." << endl;
+                    fileCreate = false;
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                break;
+            case 2:
+                system("cls");
+                cout << "Удалить базу данных автомобилей" << endl;
+                if (CreateOrDeleteFD(false))
+                {
+                    cout << "База данных успешно удален" << endl;
+                    choiceCreateFD = true;
+                    fileCreate = false;
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                else
+                {
+                    cout << "Ошибка при удалении. Повторите попытку позже." << endl;
+                    fileCreate = true;
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                break;
+            case 3:
+                system("cls");
+                cout << "Добавление записи" << endl;
+                if (creatRecordInFD(false))
+                {
+                    getAllAutoFD();
+                    cout << "Запись успешно добавлена" << endl;
+                    getAllAutoFD();
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                else
+                {
+                    cout << "Запись успешно добавлена" << endl;
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                break;
+            case 4:
+                system("cls");
+                cout << "Редактирование записи" << endl;
+                printTable();
+                if (changeWirkerInMemory())
+                {
+                    cout << "    Данные авто изменены" << endl;
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                else
+                {
+                    cout << "    Ошибка. Данные не изменены." << endl;
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                break;
+            case 5:
+                system("cls");
+                cout << "Удаление записи" << endl;
+                printTable();
+                if (deleteWirkerInMemory())
+                {
+                    cout << "Авто удалено." << endl;
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                else
+                {
+                    cout << "Ошибка. Данные не изменены." << endl;
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                break;
+            case 6:
+                system("cls");
+                cout << "Просмотр всех записей в таблице" << endl;
+                printTable();
+                if (availabilityAuto) {
                     while (ok == false)
                     {
-                        system("pause");
-                        oldUserName = getValueStr("    Введите логин удаляемого объекта");
-                        string interimFN = oldUserName + ".txt";
-                        ifstream finn(interimFN, ios_base::in);
-                        if (!finn.is_open()) // если файл не открыт
+                        continueAnsw = getValueInt("Ваш действия?\n1 - Сортировка по модели\n2 - Сортировка по цвету\n3 - Назад\n");
+                        if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3)
                         {
-                            cout << "    Пользователь с таким логином не найден!\n";
+                            switch (continueAnsw)
+                            {
+                            case 1:
+                                system("cls");
+                                cout << "Сортировка по модели\n" << endl;
+                                sortModel();
+                                printTable();
+                                continue;
+                            case 2:
+                                system("cls");
+                                cout << "Сортировка по цвету\n" << endl;
+                                sortColor();
+                                printTable();
+                                continue;
+                            case 3:
+                                GetChoiceMenuAdmin();
+                                break;
+                            default:
+                                GetChoiceMenuAdmin();
+                                break;
+                            }
                         }
                         else
                         {
-                            finn.close();
-                            ok = true;
+                            cout << "Введите одно из указанных чисел.\n" << endl;
                         }
                     }
-                    ok = false;
+                }
+                else
+                {
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                break;
+            case 7:
+                system("cls");
+                cout << "  Поиск записей" << endl;
+                cout << "и вывод в таблицу" << endl;
+                while (ok == false)
+                {
+                    continueAnsw = getValueInt("\nВарианты поиска?\n1 - по модели\n2 - по цвету\n3 - Назад\n4 - Выход\n");
+                    if (continueAnsw == 1 || continueAnsw == 2 || continueAnsw == 3 || continueAnsw == 4)
+                    {
+                        ok = true;
+                    }
+                    else
+                    {
+                        cout << "Введите одно из указанных чисел.\n";
+                    }
+                }
+                if (continueAnsw == 3)
+                {
+                    GetChoiceMenuAdmin();
+                }
+                if (continueAnsw == 4)
+                {
+                    cout << "Выход!";
+                    exit(0);
+                }
+                searchAndPrintTable(continueAnsw);
+                system("pause");
+                GetChoiceMenuAdmin();
+                break;
+            case 8:
+                system("cls");
+                cout << "Добавление новой учетной записи" << endl;
+                newUser = GetNewProfileData(false);
+                fin.open(newUser.name, ios_base::in | std::ios::binary);
+                if (!fin.is_open()) // если файл не открыт
+                {
                     while (ok == false)
                     {
-                        continueAnsw = getValueInt("\nПродолжаем?\n1 - Да\n2 - нет\n");
+                        continueAnsw = getValueInt("Продолжаем?\n1 - Да\n2 - нет\n");
                         if (continueAnsw == 1 || continueAnsw == 2)
                         {
                             ok = true;
                         }
                         else
                         {
-                            cout << "Введите одно из указанных чисел.\n";
+                            cout << "Введите одно из указанных чисел.\n" << endl;
                         }
                     }
                     if (continueAnsw == 1)
                     {
-                        newUser.name = oldUserName;
-                        out = WorkProfileFD(newUser, false, true);
+                        out = WorkProfileFD(newUser, false, false);
                         cout << out;
+                        system("pause");
+                        GetChoiceMenuAdmin();
+                    }
+                    if (continueAnsw == 2)
+                    {
+                        cout << "Операция прервана\n" << endl;
+                        GetChoiceMenuAdmin();
+                    }
+                    ok = false;
+                    break;
+                }
+                else
+                {
+                    fin.close();
+                    cout << "Пользователь с таким логином существует.\n";
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                    ok = false;
+                    break;
+                }
+
+            case 9:
+                system("cls");
+                cout << "Редактирование учетной записи" << endl;
+                cout << "\n";
+                newUser.name = getValueStr("    Введите имя учетной записи, которую желаете изменить");
+                fin.open(newUser.name + ".txt", ios_base::in);
+                if (!fin.is_open()) // если файл не открыт
+                {
+                    cout << "    Пользователь с таким логином не найден.\n";
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                    ok = false;
+                    break;
+                }
+                else
+                {
+                    fin.close();
+                    ok = false;
+                    while (ok == false)
+                    {
+                        continueAnsw = getValueInt("    Продолжаем?\n1 - Да\n2 - нет\n");
+                        if (continueAnsw == 1 || continueAnsw == 2)
+                        {
+                            ok = true;
+                        }
+                        else
+                        {
+                            cout << "    Введите одно из указанных чисел.\n";
+                        }
+                    }
+                    if (continueAnsw == 1)
+                    {
+                        cout << "    Введите новые данные учетной записи\n";
+                        interimProfile = GetNewProfileData(false);
+                        out = WorkProfileFD(interimProfile, true, false);
+                        cout << "    Учетная запись изменена\n";
+                        if (newUser.name != interimProfile.name)
+                        {
+                            WorkProfileFD(newUser, false, true);
+                        }
                         system("pause");
                         GetChoiceMenuAdmin();
                     }
@@ -1206,18 +1114,66 @@ void GetChoiceMenuAdmin()
                         cout << "    Операция прервана\n";
                         GetChoiceMenuAdmin();
                     }
-
-                    break;
-                case 11:
-                    cout << "Выход!";
-                    exit(0);
-                default:
-                    GetChoiceMenuAdmin();
+                    ok = false;
                     break;
                 }
+            case 10:
+                system("cls");
+                cout << "Удаление учетной записи" << endl;
+                ok = false;
+                while (ok == false)
+                {
+                    system("pause");
+                    oldUserName = getValueStr("    Введите логин удаляемого объекта");
+                    string interimFN = oldUserName + ".txt";
+                    ifstream finn(interimFN, ios_base::in);
+                    if (!finn.is_open()) // если файл не открыт
+                    {
+                        cout << "    Пользователь с таким логином не найден!\n";
+                    }
+                    else
+                    {
+                        finn.close();
+                        ok = true;
+                    }
+                }
+                ok = false;
+                while (ok == false)
+                {
+                    continueAnsw = getValueInt("\nПродолжаем?\n1 - Да\n2 - нет\n");
+                    if (continueAnsw == 1 || continueAnsw == 2)
+                    {
+                        ok = true;
+                    }
+                    else
+                    {
+                        cout << "Введите одно из указанных чисел.\n";
+                    }
+                }
+                if (continueAnsw == 1)
+                {
+                    newUser.name = oldUserName;
+                    out = WorkProfileFD(newUser, false, true);
+                    cout << out;
+                    system("pause");
+                    GetChoiceMenuAdmin();
+                }
+                if (continueAnsw == 2)
+                {
+                    cout << "    Операция прервана\n";
+                    GetChoiceMenuAdmin();
+                }
+
+                break;
+            case 11:
+                cout << "Выход!";
+                exit(0);
+            default:
+                GetChoiceMenuAdmin();
+                break;
             }
-            
         }
+            
     }
    
 }
@@ -1934,12 +1890,12 @@ int main(int argc, char* argv[])
                     if (!openFile.is_open())
                     {
                         cout << "Пользователь с таким логином не найден!\n";
-                        int continueAnsw;
+                        int continueAnswInterim;
                         bool okContin = false;
                         while (okContin == false)
                         {
-                            continueAnsw = getValueInt("Продолжаем?\n1 - Да\n2 - нет\n");
-                            if (continueAnsw == 1 || continueAnsw == 2)
+                            continueAnswInterim = getValueInt("1 - Зарегистрировать пользователя\n2 - Ввести другой логин\n3 - Выйти\n");
+                            if (continueAnswInterim == 1 || continueAnswInterim == 2 || continueAnswInterim == 3)
                             {
                                 okContin = true;
                             }
@@ -1948,7 +1904,51 @@ int main(int argc, char* argv[])
                                 cout << "Введите одно из указанных чисел.\n" << endl;
                             }
                         }
-                        if (continueAnsw == 2)
+                        if (continueAnswInterim == 1) {
+                            Profile newUser;
+                            string out;
+                            int continueAnsw;
+                            bool okCreatProf = false;
+                            ifstream fin;
+                            cout << "Добавление новой пользователя" << endl;
+                            newUser = GetNewProfileData(true);
+                            fin.open(newUser.name + ".txt", ios_base::in);
+                            if (!fin.is_open()) // если файл не открыт
+                            {
+                                while (okCreatProf == false)
+                                {
+                                    continueAnsw = getValueInt("Продолжаем?\n1 - Да\n2 - нет\n");
+                                    if (continueAnsw == 1 || continueAnsw == 2)
+                                    {
+                                        okCreatProf = true;
+                                    }
+                                    else
+                                    {
+                                        cout << "Введите одно из указанных чисел.\n" << endl;
+                                    }
+                                }
+                                if (continueAnsw == 1)
+                                {
+                                    out = WorkProfileFD(newUser, false, false);
+                                    profile = newUser.level;
+                                    cout << out;
+                                    system("pause");
+                                    okTwo = true;
+                                }
+                                if (continueAnsw == 2)
+                                {
+                                    cout << "Операция прервана\n" << endl;
+                                    system("pause");
+                                }
+                            }
+                            else
+                            {
+                                fin.close();
+                                cout << "Пользователь с таким логином существует.\n";
+                                system("pause");
+                            }
+                        }
+                        if (continueAnswInterim == 3)
                         {
                             cout << "Операция прервана\n" << endl;
                             system("pause");
